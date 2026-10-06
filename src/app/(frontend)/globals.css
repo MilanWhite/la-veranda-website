@@ -1,0 +1,588 @@
+:root {
+  --black: #000;
+  --black-alt: #0f0f0f;
+  --white: #fff;
+  --text: #f7f7f7;
+  --muted: #757575;
+  --accent: #61b5c7;
+  --line: rgba(217, 210, 210, 0.28);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--black);
+  color: var(--text);
+  font-family: var(--font-body), sans-serif;
+  font-size: 18px;
+  line-height: 1.5;
+}
+
+h1,
+h2,
+h3 {
+  color: var(--white);
+  font-family: var(--font-heading), serif;
+  font-weight: 400;
+  line-height: 1.2;
+  margin: 0 0 0.5em;
+}
+
+h1 {
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 600;
+}
+
+h2 {
+  font-size: clamp(1.75rem, 4vw, 2.2rem);
+}
+
+h3 {
+  font-size: 1.375rem;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Layout */
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+/* Full-width rows (header, footer) that stop growing at 1920px */
+.container-wide {
+  max-width: 1920px;
+  margin: 0 auto;
+  padding: 0 clamp(16px, 6vw, 90px);
+}
+
+.section {
+  padding: clamp(56px, 10vw, 100px) 0;
+}
+
+.section-alt {
+  background: var(--black-alt);
+}
+
+.section-title {
+  font-size: clamp(2rem, 5vw, 2.8rem);
+  text-align: center;
+}
+
+.divider {
+  margin: 30px 0;
+  border: 0;
+  border-top: 1px solid var(--line);
+}
+
+.center {
+  text-align: center;
+}
+
+.leader-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.leader-row h3 {
+  margin: 0;
+}
+
+.leader-line {
+  flex: 1;
+  min-width: 20px;
+  border-top: 1px solid var(--line);
+}
+
+.leader-value {
+  color: var(--accent);
+  font-size: 24px;
+  text-align: right;
+}
+
+.eyebrow {
+  color: var(--white);
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: 3.5px;
+  text-transform: uppercase;
+}
+
+.eyebrow-accent {
+  color: var(--accent);
+}
+
+.logo {
+  width: clamp(138px, 11vw, 160px);
+  height: auto;
+}
+
+/* Fill images (used with next/image `fill`) */
+.cover {
+  object-fit: cover;
+}
+
+.darken {
+  filter: brightness(0.5);
+}
+
+/* Buttons: .button = white outline, .button-solid = filled white. Each swaps on hover. */
+
+.button,
+.button-solid,
+button[type='submit'] {
+  display: inline-block;
+  padding: 15px 20px;
+  border: 2px solid var(--white);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 2.5px;
+  line-height: 1;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    color 0.2s;
+}
+
+.button,
+button[type='submit'] {
+  background: transparent;
+  color: var(--white);
+}
+
+.button:hover,
+button[type='submit']:hover,
+.button-solid {
+  background: var(--white);
+  color: var(--black);
+}
+
+.button-solid:hover {
+  background: transparent;
+  color: var(--white);
+}
+
+/* Forms */
+
+input,
+select,
+textarea {
+  width: 100%;
+  padding: 0.6em 0.8em;
+  border: 1px solid #444;
+  background: var(--black-alt);
+  color: var(--white);
+  font: inherit;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+label {
+  display: block;
+  margin-bottom: 0.3em;
+}
+
+/* Header */
+
+.topbar {
+  border-bottom: 1px solid #222;
+  font-size: 16px;
+}
+
+.topbar-inner,
+.topbar-contact,
+.topbar-social {
+  display: flex;
+  align-items: center;
+}
+
+.topbar-inner {
+  justify-content: space-between;
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
+
+.topbar-contact {
+  gap: 30px;
+}
+
+.topbar-social {
+  gap: 20px;
+}
+
+.topbar svg {
+  vertical-align: -2px;
+}
+
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  padding-top: 24px;
+  padding-bottom: 24px;
+}
+
+.nav,
+.nav ul {
+  display: flex;
+  align-items: center;
+  gap: 26px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.nav {
+  flex: 1;
+  gap: 36px;
+}
+
+/* Centre the links between the logo and the button */
+.nav > ul {
+  margin: 0 auto;
+}
+
+.nav a,
+.nav button {
+  color: var(--white);
+}
+
+.nav button {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  cursor: pointer;
+}
+
+.nav > ul > li > a:hover,
+.nav button:hover {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 8px;
+}
+
+.nav button svg {
+  vertical-align: -2px;
+}
+
+.has-dropdown {
+  position: relative;
+}
+
+.nav .dropdown {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: -20px;
+  z-index: 10;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+  min-width: 240px;
+  background: var(--black);
+}
+
+.nav .has-dropdown:hover .dropdown,
+.nav .has-dropdown:focus-within .dropdown {
+  display: flex;
+}
+
+.dropdown a {
+  display: block;
+  padding: 14px 20px;
+  font-size: 16px;
+}
+
+.dropdown a:hover {
+  background: #141414;
+}
+
+.nav-toggle,
+.nav-toggle-label {
+  display: none;
+}
+
+@media (max-width: 1024px) {
+  .nav-toggle-label {
+    display: block;
+    color: var(--white);
+    font-size: 1.6rem;
+    cursor: pointer;
+  }
+
+  .nav {
+    display: none;
+    flex-basis: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1em;
+    padding: 1em 0;
+  }
+
+  .nav ul {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1em;
+    margin: 0;
+  }
+
+  .nav-toggle:checked ~ .nav {
+    display: flex;
+  }
+
+  .nav .dropdown {
+    display: flex;
+    position: static;
+    min-width: 0;
+    padding-left: 1em;
+  }
+
+  .dropdown a {
+    padding: 0.5em 0;
+  }
+}
+
+@media (max-width: 767px) {
+  .topbar {
+    display: none;
+  }
+}
+
+/* Homepage */
+
+.hero {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 70vh;
+  text-align: center;
+}
+
+.hero-content {
+  position: relative;
+  max-width: 900px;
+}
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: clamp(40px, 6vw, 60px);
+}
+
+.feature {
+  text-align: center;
+}
+
+/* Same shape for both photos, wide enough that their text is never cut off at the sides */
+.feature-image {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  filter: brightness(0.73);
+}
+
+.feature h2 {
+  margin-top: 0.8em;
+}
+
+.dish-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 0 60px;
+  margin-bottom: 40px;
+}
+
+.dish {
+  margin-bottom: 30px;
+}
+
+.dish p {
+  margin: 0.3em 0 0;
+  font-size: 16px;
+}
+
+.statement {
+  position: relative;
+  height: clamp(220px, 30vw, 410px);
+}
+
+.visit-grid {
+  display: grid;
+  gap: clamp(40px, 6vw, 80px);
+}
+
+.visit-col {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Desktop: the map stretches so both columns end at the same line */
+@media (min-width: 900px) {
+  .visit-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .visit-col .map {
+    flex: 1;
+    min-height: 240px;
+    aspect-ratio: auto;
+    margin-bottom: 0;
+  }
+}
+
+.map {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  margin: 24px 0;
+  border: 0;
+}
+
+.button-row {
+  display: flex;
+  margin-top: auto;
+  padding-top: 8px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+/* Buttons share the row; when they wrap on small screens each fills the width */
+.button-row > * {
+  flex: 1 1 auto;
+  text-align: center;
+}
+
+.hours-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.hours-list li {
+  margin-bottom: 24px;
+}
+
+.hours-note {
+  margin: 0.3em 0 0;
+  font-size: 15px;
+  opacity: 0.7;
+  text-align: right;
+}
+
+@media (max-width: 767px) {
+  .hero .eyebrow {
+    margin: 0 0 8px;
+  }
+}
+
+/* Footer */
+
+.footer {
+  padding-top: clamp(40px, 6vw, 60px);
+  font-size: 16px;
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: clamp(28px, 4vw, 40px);
+}
+
+@media (min-width: 1025px) {
+  .footer-grid {
+    grid-template-columns: 1.75fr 1fr 1fr 1fr;
+  }
+}
+
+.footer h2 {
+  color: var(--accent);
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.footer ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.footer li {
+  margin-bottom: 0.5em;
+}
+
+.footer a:hover {
+  color: var(--accent);
+}
+
+.icon-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.icon-list li {
+  margin-bottom: 0.5em;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.icon-list svg {
+  flex-shrink: 0;
+  margin-top: 5px;
+  color: var(--accent);
+}
+
+/* Plain social icons, same as the header top bar; teal on hover */
+.social-icons {
+  display: flex;
+  gap: 20px;
+  font-size: 18px;
+}
+
+.social-icons a {
+  display: inline-flex;
+  color: var(--white);
+  transition: color 0.2s;
+}
+
+.social-icons a:hover,
+.social-icons a:focus-visible,
+.topbar a:hover,
+.topbar a:focus-visible {
+  color: var(--accent);
+}
+
+.copyright {
+  margin: 40px 0 0;
+  padding: 20px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.13);
+  color: var(--muted);
+  text-align: center;
+}
