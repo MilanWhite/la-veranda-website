@@ -1,6 +1,7 @@
 import * as migration_20261001_235010_initial from './20261001_235010_initial';
 import * as migration_20261002_005154_site_settings from './20261002_005154_site_settings';
 import * as migration_20261004_171356_hours_note from './20261004_171356_hours_note';
+import * as migration_20261009_021748_menus_specials_gallery from './20261009_021748_menus_specials_gallery';
 
 export const migrations = [
   {
@@ -17,5 +18,10 @@ export const migrations = [
     up: migration_20261004_171356_hours_note.up,
     down: migration_20261004_171356_hours_note.down,
     name: '20261004_171356_hours_note',
+  },
+  {
+    up: migration_20261009_021748_menus_specials_gallery.up,
+    down: migration_20261009_021748_menus_specials_gallery.down,
+    name: '20261009_021748_menus_specials_gallery',
   },
 ];

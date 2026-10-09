@@ -1,12 +1,17 @@
 import type { GlobalConfig } from 'payload'
 
 import { authenticated } from '../access/authenticated'
+import { revalidateGlobalAfterChange } from '../hooks/revalidateSite'
 
 export const SiteSettings: GlobalConfig = {
   slug: 'site-settings',
+  admin: { group: 'Settings' },
   access: {
     read: () => true,
     update: authenticated,
+  },
+  hooks: {
+    afterChange: [revalidateGlobalAfterChange],
   },
   fields: [
     { name: 'restaurantName', type: 'text', required: true, defaultValue: 'La Veranda' },
