@@ -586,3 +586,213 @@ label {
   color: var(--muted);
   text-align: center;
 }
+
+/* Shared content helpers */
+
+.narrow {
+  max-width: 900px;
+}
+
+.lead {
+  font-size: 19px;
+}
+
+.lead p {
+  margin: 0 0 1em;
+}
+
+.small {
+  font-size: 16px;
+  opacity: 0.85;
+}
+
+.lead a,
+.small a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.lead a:hover,
+.small a:hover {
+  color: var(--accent);
+}
+
+.button-row-center {
+  justify-content: center;
+  margin: 30px 0;
+}
+
+.button-row-center > * {
+  flex: 0 1 auto;
+}
+
+@media (max-width: 600px) {
+  .button-row-center > * {
+    flex: 1 1 100%;
+  }
+}
+
+.plain-list {
+  margin: 0 0 1.5em;
+  padding-left: 1.2em;
+}
+
+/* Inner-page banner (dark room photo + title) */
+
+.page-banner {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: clamp(240px, 35vw, 450px);
+  text-align: center;
+}
+
+.page-banner-content,
+.cta-content {
+  position: relative;
+  width: 100%;
+}
+
+/* Call-to-action on the old site's statement photo ("Book Your Reservation/Event") */
+.cta-photo {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: clamp(380px, 40vw, 500px);
+}
+
+/* Darker than the banners so the paragraph text stays readable on busy photos */
+.cta-photo .darken {
+  filter: brightness(0.3);
+}
+
+.cta-photo .lead {
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.6);
+}
+
+.anchor-target {
+  scroll-margin-top: 10px;
+}
+
+.page-banner h1 {
+  margin: 0;
+  font-size: clamp(2.4rem, 6vw, 3.6rem);
+}
+
+.page-banner .eyebrow {
+  margin: 0 0 10px;
+}
+
+/* Menus */
+
+.menu-nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px 10px;
+  margin-top: 10px;
+}
+
+.menu-nav a {
+  padding: 6px 14px;
+  border: 1px solid var(--line);
+  font-size: 15px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+.menu-nav a:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* Two independent columns on wide screens (each section placed in the shorter one), so
+   there are no empty gaps beside short sections. On small screens the column wrappers
+   disappear and each block's inline `order` puts the menu back in its original order. */
+.menu-columns {
+  display: flex;
+  flex-direction: column;
+}
+
+.menu-column {
+  display: contents;
+}
+
+@media (min-width: 900px) {
+  .menu-columns {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: clamp(40px, 6vw, 90px);
+  }
+
+  .menu-column {
+    display: block;
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+.menu-block {
+  padding-bottom: 20px;
+}
+
+.menu-section {
+  margin-bottom: 50px;
+  scroll-margin-top: 20px;
+}
+
+.menu-section-title {
+  margin: 0 0 24px;
+  font-family: var(--font-body), sans-serif;
+  font-size: 17px;
+}
+
+.menu-section-description {
+  margin: -12px 0 24px;
+  font-style: italic;
+  opacity: 0.85;
+}
+
+/* Sub-groups (Benedicts, Skillets…) sit in a dashed box like the printed brunch menu */
+.menu-subgroup {
+  margin-top: -20px;
+  padding: 24px clamp(16px, 3vw, 28px) 4px;
+  border: 1px dashed var(--line);
+}
+
+.menu-subgroup-title {
+  margin-bottom: 4px;
+  font-weight: 600;
+}
+
+.menu-subgroup .menu-section-description {
+  margin-top: 0;
+}
+
+.menu-addons {
+  margin: 0.4em 0 0;
+  padding: 0;
+  list-style: none;
+  color: var(--accent);
+  font-size: 15px;
+}
+
+.menu-section > .menu-addons {
+  margin-top: -10px;
+  font-size: 17px;
+}
+
+.menu-note {
+  margin: 0;
+  font-family: var(--font-heading), serif;
+  font-size: 19px;
+  text-align: center;
+}
+
+/* Small screens: long names wrap instead of pushing the price onto its own line */
+@media (max-width: 600px) {
+  .menu-section .leader-value {
+    max-width: 55%;
+    font-size: 20px;
+  }
+}
