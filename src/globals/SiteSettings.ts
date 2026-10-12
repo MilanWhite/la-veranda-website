@@ -28,6 +28,7 @@ export const SiteSettings: GlobalConfig = {
       fields: [
         { name: 'days', type: 'text', required: true },
         { name: 'time', type: 'text', required: true },
+        { name: 'note', type: 'text', admin: { description: 'e.g. "Kitchen closes at 2:30pm"' } },
       ],
     },
     {

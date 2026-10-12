@@ -345,6 +345,10 @@ export interface SiteSetting {
     | {
         days: string;
         time: string;
+        /**
+         * e.g. "Kitchen closes at 2:30pm"
+         */
+        note?: string | null;
         id?: string | null;
       }[]
     | null;
@@ -386,6 +390,7 @@ export interface SiteSettingsSelect<T extends boolean = true> {
     | {
         days?: T;
         time?: T;
+        note?: T;
         id?: T;
       };
   seo?:
