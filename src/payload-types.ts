@@ -541,6 +541,10 @@ export interface Gallery {
   images?:
     | {
         image: number | Media;
+        /**
+         * Used by the filter tabs on /gallery.
+         */
+        category: 'food' | 'events' | 'restaurant';
         showOnEventsPage?: boolean | null;
         id?: string | null;
       }[]
@@ -609,6 +613,7 @@ export interface GallerySelect<T extends boolean = true> {
     | T
     | {
         image?: T;
+        category?: T;
         showOnEventsPage?: T;
         id?: T;
       };

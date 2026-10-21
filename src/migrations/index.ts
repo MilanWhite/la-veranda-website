@@ -3,6 +3,7 @@ import * as migration_20261002_005154_site_settings from './20261002_005154_site
 import * as migration_20261004_171356_hours_note from './20261004_171356_hours_note';
 import * as migration_20261009_021748_menus_specials_gallery from './20261009_021748_menus_specials_gallery';
 import * as migration_20261018_181844_group_menu_pdf from './20261018_181844_group_menu_pdf';
+import * as migration_20261021_224248_gallery_category from './20261021_224248_gallery_category';
 
 export const migrations = [
   {
@@ -29,5 +30,10 @@ export const migrations = [
     up: migration_20261018_181844_group_menu_pdf.up,
     down: migration_20261018_181844_group_menu_pdf.down,
     name: '20261018_181844_group_menu_pdf',
+  },
+  {
+    up: migration_20261021_224248_gallery_category.up,
+    down: migration_20261021_224248_gallery_category.down,
+    name: '20261021_224248_gallery_category',
   },
 ];
