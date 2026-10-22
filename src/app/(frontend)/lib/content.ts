@@ -24,7 +24,9 @@ export const getGallery = cache(async () => {
   const gallery = await (await payload()).findGlobal({ slug: 'gallery' })
   return (gallery.images ?? []).flatMap((row) => {
     const image = asMedia(row.image)
-    return image ? [{ image, showOnEventsPage: Boolean(row.showOnEventsPage) }] : []
+    return image
+      ? [{ image, category: row.category, showOnEventsPage: Boolean(row.showOnEventsPage) }]
+      : []
   })
 })
 
