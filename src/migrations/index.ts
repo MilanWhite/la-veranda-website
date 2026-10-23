@@ -4,6 +4,7 @@ import * as migration_20261004_171356_hours_note from './20261004_171356_hours_n
 import * as migration_20261009_021748_menus_specials_gallery from './20261009_021748_menus_specials_gallery';
 import * as migration_20261018_181844_group_menu_pdf from './20261018_181844_group_menu_pdf';
 import * as migration_20261021_224248_gallery_category from './20261021_224248_gallery_category';
+import * as migration_20261023_220023_contact_messages from './20261023_220023_contact_messages';
 
 export const migrations = [
   {
@@ -35,5 +36,10 @@ export const migrations = [
     up: migration_20261021_224248_gallery_category.up,
     down: migration_20261021_224248_gallery_category.down,
     name: '20261021_224248_gallery_category',
+  },
+  {
+    up: migration_20261023_220023_contact_messages.up,
+    down: migration_20261023_220023_contact_messages.down,
+    name: '20261023_220023_contact_messages'
   },
 ];

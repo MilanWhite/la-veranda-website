@@ -5,6 +5,7 @@ import { buildConfig } from 'payload'
 import { fileURLToPath } from 'url'
 import sharp from 'sharp'
 
+import { ContactMessages } from './collections/ContactMessages'
 import { Media } from './collections/Media'
 import { Menus } from './collections/Menus'
 import { Specials } from './collections/Specials'
@@ -22,7 +23,7 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
-  collections: [Menus, Specials, Media, Users],
+  collections: [ContactMessages, Menus, Specials, Media, Users],
   globals: [Gallery, SiteSettings],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
