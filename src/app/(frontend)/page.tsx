@@ -5,10 +5,8 @@ import eventCenter from '@/assets/event-center.webp'
 import hero from '@/assets/hero.webp'
 import kitchen from '@/assets/kitchen.webp'
 import statement from '@/assets/statement.jpg'
-import { ContactList } from './components/ContactList'
-import { HoursList } from './components/HoursList'
-import { directionsUrl, MapEmbed } from './components/MapEmbed'
 import { MenuSections } from './components/MenuSections'
+import { VisitUs } from './components/VisitUs'
 import { getSiteSettings } from './getSiteSettings'
 import { getMenu } from './lib/content'
 
@@ -31,7 +29,6 @@ async function getFeaturedDishes() {
 
 export default async function HomePage() {
   const [settings, featured] = await Promise.all([getSiteSettings(), getFeaturedDishes()])
-  const directions = directionsUrl(settings)
 
   return (
     <>
@@ -42,7 +39,7 @@ export default async function HomePage() {
           <h1>
             Downtown Woodbridge’s Premier Event Space For All Corporate, Social And Private Events.
           </h1>
-          <Link href="/book-an-event" className="button-solid">
+          <Link href="/events#book-an-event" className="button-solid">
             Book an Event
           </Link>
         </div>
@@ -58,7 +55,7 @@ export default async function HomePage() {
               Book with us today and all you have to do is sit back and enjoy. If you have any
               questions, don’t hesitate to contact us.
             </p>
-            <Link href="/book-an-event" className="button">
+            <Link href="/events#book-an-event" className="button">
               Book an Event
             </Link>
           </div>
@@ -105,38 +102,7 @@ export default async function HomePage() {
         <Image src={statement} alt="" fill sizes="100vw" className="cover" />
       </section>
 
-      <section className="section section-alt">
-        <div className="container">
-          <h2 className="section-title">Visit Us</h2>
-          <hr className="divider" />
-          <div className="visit-grid">
-            <div className="visit-col">
-              <p className="eyebrow eyebrow-accent">Find Us</p>
-              <ContactList settings={settings} />
-              <MapEmbed settings={settings} />
-            </div>
-
-            <div className="visit-col">
-              {settings.hours && settings.hours.length > 0 && (
-                <>
-                  <p className="eyebrow eyebrow-accent">Opening Hours</p>
-                  <HoursList hours={settings.hours} />
-                </>
-              )}
-              <div className="button-row">
-                {directions && (
-                  <a href={directions} className="button" target="_blank" rel="noopener noreferrer">
-                    Get Directions
-                  </a>
-                )}
-                <Link href="/book-an-event" className="button">
-                  Book an Event
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <VisitUs settings={settings} />
     </>
   )
 }
