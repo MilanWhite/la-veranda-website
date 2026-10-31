@@ -16,9 +16,9 @@ const quickLinks = [
 ]
 
 const menuLinks = [
-  { label: 'Pastas', href: '/menu#pasta' },
-  { label: 'Pizzas', href: '/menu#pizzas' },
-  { label: 'Carne', href: '/menu#carne' },
+  { label: 'Pasta', href: '/menu#pasta' },
+  { label: 'Pizza', href: '/menu#pizza' },
+  { label: 'Secondi', href: '/menu#secondi' },
   { label: 'Antipasto', href: '/menu#antipasto' },
   { label: 'Brunch', href: '/brunch-menu' },
 ]

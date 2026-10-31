@@ -180,6 +180,25 @@ button[type='submit']:hover,
   color: var(--white);
 }
 
+/* A button whose target doesn't exist yet (e.g. a menu PDF not uploaded) */
+.button.is-disabled {
+  border-color: #555;
+  color: #888;
+  cursor: default;
+}
+
+.button.is-disabled:hover {
+  background: transparent;
+  color: #888;
+}
+
+.button.is-disabled small {
+  margin-left: 10px;
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  color: #777;
+}
+
 /* Forms */
 
 input,
@@ -684,27 +703,6 @@ label {
 }
 
 /* Menus */
-
-.menu-nav {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 8px 10px;
-  margin-top: 10px;
-}
-
-.menu-nav a {
-  padding: 6px 14px;
-  border: 1px solid var(--line);
-  font-size: 15px;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-}
-
-.menu-nav a:hover {
-  border-color: var(--accent);
-  color: var(--accent);
-}
 
 /* Two independent columns on wide screens (each section placed in the shorter one), so
    there are no empty gaps beside short sections. On small screens the column wrappers

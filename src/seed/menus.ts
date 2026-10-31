@@ -1,8 +1,7 @@
 import type { Menu } from '../payload-types'
 
-// Placeholder menus taken from laverandaresto.com (Nov 2026) and the restaurant's own
-// BrunchMenuMay2025.pdf, with spelling fixed. The owner still has to confirm items and
-// prices; after that they are edited in the admin, not here.
+// The restaurant's printed dinner and brunch menus (photographed Nov 2026), with spelling
+// fixed. After seeding, menus are edited in the admin, not here.
 
 type Section = NonNullable<Menu['sections']>[number]
 type Item = NonNullable<Section['items']>[number]
@@ -23,206 +22,215 @@ const section = (title: string, items: Item[], extra: Partial<Section> = {}): Se
 export const dinnerMenu: Omit<Menu, 'id' | 'createdAt' | 'updatedAt'> = {
   title: 'Dinner Menu',
   slug: 'dinner',
+  pdfLabel: 'Download Dinner Menu',
   sections: [
-    section('Dips', [
-      item('Hummus', 9, 'Chickpea, roasted garlic, smoked paprika and lemon', {
-        featured: 'recommendation',
-      }),
-      item('Babaghanouj', 10, 'Roasted eggplant, sesame and lemon'),
-      item('Labneh', 10, 'Pressed yogurt'),
-    ]),
-    section('Bistecca', [
-      item(
-        'Dry Aged "AAA" Striploin',
-        42,
-        'Served with crispy Parmesan potato, grilled thick-cut tomato and garlic beans',
-        { priceLabel: '10oz' },
-      ),
-      item(
-        'Dry Aged "AAA" Ribeye',
-        55,
-        'Served with crispy Parmesan potato, grilled thick-cut tomato and garlic beans',
-        { priceLabel: '12oz' },
-      ),
-    ]),
-    section(
-      'Pasta',
-      [
-        item(
-          'Pappardelle Ai Funghi',
-          18,
-          'Pappardelle / wild mushrooms / garlic / smoked bread crumbs / olive oil',
-        ),
-        item(
-          'Ravioli Di Coniglio',
-          22,
-          'Braised and pulled rabbit stuffed ravioli / leeks / butter sauce',
-        ),
-        item('Gnocchi E Ragu Di Agnello', 20, 'Potato gnocchi / stewed lamb and tomato', {
-          featured: 'recommendation',
-        }),
-        item(
-          'Spaghetti E Aragosta',
-          24,
-          'Squid ink spaghetti chitarra / poached lobster / saffron / zucchini / tomato / white wine',
-        ),
-        item(
-          'Fettuccine Con Salsiccia E Piselli',
-          22,
-          'Fettuccine / sweet peas / house-made sausage / onion / mascarpone',
-        ),
-      ],
-      { note: 'All pasta is made in-house' },
-    ),
-    section('Carne', [
-      item(
-        'Blue Red Burger',
-        21,
-        'Grilled to mouthwatering perfection and finished with spicy roasted red pepper, fresh tomato, arugula and blue cheese sauce',
-      ),
-      item(
-        'Chicken Skewers (Tawouk Platter)',
-        22,
-        'Grilled chicken in a yogurt and chili marinade',
-      ),
-      item('Tenderloin Beef Skewers', 26, 'Grilled tenderloin marinated in special spices'),
-      // The live site shows this item with no price, so it stays hidden until confirmed.
-      item('House Speciality', null, 'Served with grilled vegetables and house salad', {
-        available: false,
-      }),
-    ]),
-    section(
-      'Insalate',
-      [
-        item(
-          'Caesar',
-          14,
-          'Romaine lettuce, shaved Grana Padano and pita croutons with our own dressing',
-        ),
-        item(
-          'Fattoush',
-          16,
-          'Escarole, tomato, cucumber, sweet onion, house pickle, celery, spiced pita crisps and pomegranate sumac vinaigrette',
-        ),
-        item(
-          'Tuscan',
-          19,
-          'Torn radicchio and kale, shaved fennel, roasted walnuts, prosecco pear and goat cheese with chestnut honey and fig dressing',
-        ),
-        item(
-          'Winter Caprese',
-          21,
-          'Imported bufala mozzarella, roasted tomato, pickled beets, orange, pistachio and lentils with aged balsamic',
-        ),
-        item(
-          'Tabouleh',
-          14,
-          'Chopped parsley, mint, bulgur, tomato, sweet onion, radish and avocado with spiced lemon oil',
-        ),
-        item(
-          'Siciliana',
-          18,
-          'Wild arugula, orange, fennel, pistachio, dried olive, celery and caperberry with chili-prosecco dressing',
-        ),
-      ],
-      { addOns: [{ label: 'Add grilled chicken breast or shrimp', price: 8 }] },
-    ),
-    section('Main', [
-      item(
-        'Grilled Organic Salmon Filet',
-        24,
-        'Wilted kale and mixed mushroom salad, warm pancetta-truffle dressing',
-        { featured: 'recommendation' },
-      ),
-      item(
-        'Anatra',
-        28,
-        'Pan-seared duck breast / chanterelle mushroom / charred grapes / Belgian endive',
-      ),
-      item('Grigliata Di Pesce Mista', 25, "A daily offering of the market's freshest selection"),
-      item(
-        'Maiale',
-        26,
-        'Crispy and tender pork belly / sweet corn polenta / roasted apples and thyme',
-      ),
-      item('Manzo', 42, 'Grilled Black Angus ribeye / mushroom conserva / tomato salad'),
-      item(
-        'Pollo',
-        24,
-        'Pan-roasted chicken supreme / eggplant / zucchini / pepper / onion / celery / caper berries / pan jus',
-      ),
-      item(
-        'Spigola',
-        36,
-        'Grilled whole European sea bass / stewed fregola / leeks / rapini / cauliflower / clams',
-        { featured: 'recommendation' },
-      ),
-    ]),
-    section('Pizzas', [
-      item('Pepperoni Pizza', 16, 'Tomato sauce, cheese and pepperoni', { featured: 'popular' }),
-      item('Margherita', 16, 'Tomato sauce, cheese and basil'),
-      item(
-        'Suicide Pizza',
-        20,
-        'Soppressata, spicy Calabrese sausage, chili flakes, black olives, roasted red peppers, mozzarella and tomato sauce',
-      ),
-      item('Calabrese', 18, 'Tomato sauce, mozzarella, red peppers, hot salami and black olives'),
-      item(
-        'La Veranda Pizza',
-        22,
-        'Bocconcini, cherry tomato, prosciutto, arugula and Grana Padano. Red or white',
-        { featured: 'popular' },
-      ),
-      item('Napoletana', 18, 'Tomato sauce, cheese, capers, black olives and anchovies'),
-      item(
-        'Mushroom Caramelized Onion',
-        18,
-        'Cheese, garlic, mushroom and caramelized onion. Red or white',
-      ),
-      item(
-        'Zorba Style Vegetarian Pizza',
-        17,
-        'Mozzarella and feta, tomato sauce, red onion, diced tomatoes, Kalamata olives and fresh oregano',
-      ),
-      item('Mushroom Pizza', 16, 'White pizza with cheese, mushroom, parsley and olive oil'),
-    ]),
     section('Antipasto', [
-      item('Shared Board', 32, "Chef's selection of salumi and cheese with preserves and pickles"),
       item(
-        'La Veranda Porchetta',
-        16,
-        'Slow-roasted pork shoulder / house-baked focaccia / caramelized onions / rapini / roasted garlic aioli',
+        'Shared Board',
+        32,
+        'Marinated grilled vegetables, prosciutto, salami, bocconcini and Grana Padano',
+      ),
+      item(
+        'Brie Focaccia',
+        20,
+        'Focaccia bread with a whole melted brie, served with a side of pesto and jam',
+      ),
+      item(
+        'Calamari Fritti',
+        20,
+        'Dusted with seasoned flour and mixed with lemon herbs. Served with marinara sauce',
         { featured: 'popular' },
       ),
-      item(
-        'Crispy Feta Cheese Rolls',
-        12,
-        'Spring rolls stuffed with feta, mozzarella and oregano',
-      ),
-      item('Warm Olives', 12, 'Marinated olives with garlic, herbs and citrus'),
-      item(
-        'Sardine Alla Griglia',
-        12,
-        'Tossed in parsley, garlic, lemon and chili on a cauliflower purée',
-      ),
-      item('Calamari Fritti', 18, 'Dusted with seasoned flour, served with smoked red pepper dip'),
-      item(
-        'Polenta Fries',
-        12,
-        'Our own polenta chips made with rosemary and Grana Padano, served with lemon dip',
-      ),
-      item(
-        'Vegetarian Delight',
-        19,
-        "Middle Eastern flavours: four falafel balls, pickles, olives, hummus, babaghanouj and labneh with za'atar",
-      ),
-      item('Polipo Alla Griglia', 26, 'Grilled octopus / balsamic reduction / chickpea / arugula', {
-        featured: 'popular',
-      }),
+      item('Cauliflower Fritti', 14, 'Breaded cauliflower served with marinara sauce'),
       item(
         'Ravioli Fritti',
         14,
-        'Deep-fried ravioli stuffed with spinach and ricotta, served with arrabbiata sauce',
+        'Fried agnolotti stuffed with spinach and ricotta, served with marinara sauce',
+      ),
+      item('Crispy Cheese Roll', 14, 'Spring rolls stuffed with feta, mozzarella and oregano'),
+      item(
+        'P.E.I. Mussels',
+        22,
+        'Steamed PEI mussels in a tomato garlic sauce with chili flakes and white wine, served with our homemade bread',
+      ),
+      item('Burrata Fritta', 26, 'Served with arugula, mortadella and pistachio'),
+      item(
+        'Polenta Fritti',
+        16,
+        'Polenta sticks made with rosemary, topped with Grana Padano and served with marinara sauce',
+      ),
+      item('Warm Mixed Olives', 15, 'Served with focaccia bread'),
+      item(
+        "Za'atar Focaccia",
+        12,
+        'Freshly baked focaccia with thyme, oregano, sesame seeds and olive oil, served with cucumber, olives and tomatoes',
+      ),
+    ]),
+    section(
+      'Salads',
+      [
+        item(
+          'Burrata & Fig Salad',
+          23,
+          'Sun-dried tomatoes and arugula with pesto balsamic vinaigrette, drizzled with fig glaze',
+          { featured: 'recommendation' },
+        ),
+        item(
+          'Kale & Beets',
+          18,
+          'Shredded kale and beet, apple and cranberry with lemon pomegranate vinaigrette',
+        ),
+        item(
+          'Caesar Salad',
+          15,
+          'Romaine lettuce, shaved Grana Padano and croutons with Caesar dressing',
+        ),
+        item(
+          'Summer Caprese',
+          22,
+          'Fior di latte, arugula, tomatoes and lentils dressed with balsamic and pesto',
+        ),
+        item(
+          'Mixed Green Salad',
+          15,
+          'Mixed greens, tomatoes, red peppers and cucumber with balsamic vinaigrette',
+        ),
+        item(
+          'Greek Salad',
+          16,
+          'Romaine lettuce, tomatoes, cucumber, sweet red onion, feta, Kalamata olives and oregano with red wine vinaigrette',
+        ),
+        item(
+          'Arugula Salad',
+          21,
+          'Arugula, tomatoes, fresh mozzarella and prosciutto dressed with pesto balsamic vinaigrette',
+        ),
+      ],
+      {
+        addOns: [
+          { label: 'Add chicken', price: 6 },
+          { label: 'Add steak', price: 12 },
+        ],
+      },
+    ),
+    section('Sandwiches', [
+      item(
+        'Della Tella',
+        20,
+        'Mortadella, stracciatella, pistachio mascarpone spread and arugula drizzled with pesto',
+      ),
+      item(
+        'Grilled Chicken Pomodoro',
+        18,
+        'Grilled chicken with tomato sauce, melted mozzarella, sun-dried tomato pesto mayo and arugula',
+      ),
+      item('Grilled Veggie', 16, 'Mixed marinated grilled vegetables with arugula and pesto mayo'),
+      item('Caprese', 18, 'Fresh mozzarella, balsamic marinated tomatoes, basil pesto and arugula'),
+      item('Brie & Prosciutto', 20, 'Melted brie, prosciutto, arugula and balsamic glaze'),
+    ]),
+    section('Secondi', [
+      item(
+        'Bistecca',
+        45,
+        'Grilled 10 oz ribeye with mushroom sauce. Served with mashed potatoes and mixed grilled vegetables',
+        { featured: 'recommendation' },
+      ),
+      item(
+        'Osso Buco',
+        40,
+        'Slow-roasted veal shank in a tomato wine ragù. Served with your choice of homemade polenta or mashed potatoes',
+      ),
+      item(
+        'Grilled Salmon',
+        30,
+        'Served with mashed potatoes or lentils and mixed grilled vegetables',
+      ),
+      item(
+        'Chicken Supreme',
+        28,
+        'Pan-roasted chicken breast with mashed potatoes and mixed vegetables, served with sauce',
+      ),
+      item(
+        'Chicken Shrimp',
+        30,
+        'Grilled dark chicken with shrimp, served with roasted potatoes and a mango avocado arugula salad',
+      ),
+    ]),
+    section('Pasta', [
+      item('Penne alla Vodka', 22, 'Penne in a tomato and vodka sauce with pancetta'),
+      item(
+        'Agnolotti Di Funghi',
+        26,
+        'Mushroom-stuffed agnolotti in a garlic and creamy Alfredo sauce, finished with parsley',
+      ),
+      item(
+        'Gnocchi E Ragù Di Agnello',
+        28,
+        'Potato gnocchi with stewed lamb in a tomato-based sauce',
+        { featured: 'recommendation' },
+      ),
+      item(
+        'Fettuccine Con Salsiccia E Piselli',
+        28,
+        'Fettuccine with sweet peas, sausage, onion and mascarpone',
+      ),
+      item(
+        'Fettuccine With Chicken',
+        26,
+        'Fettuccine topped with grilled chicken in a creamy Alfredo sauce',
+      ),
+      item(
+        'Rigatoni Bolognese',
+        25,
+        'A slow-braised ragù of beef and veal with sweet onion, fresh basil and tomato sauce',
+      ),
+      item(
+        'Chitarrini Di Mare',
+        32,
+        'Squid ink spaghetti with tiger shrimp, clams, mussels and garlic in a tomato wine sauce',
+      ),
+      item(
+        'Pasta alla Norma',
+        26,
+        'Sicilian-style pasta with fried eggplant, tomato sauce, fresh basil and shaved ricotta salata',
+      ),
+      item(
+        "Chicken & 'Nduja Gnocchi",
+        26,
+        "Sautéed chicken, 'nduja sausage, peas and Alfredo sauce",
+      ),
+      item(
+        'Pesto Chicken Penne',
+        26,
+        'Sautéed chicken, sun-dried tomatoes, garlic and Parmesan in a basil pesto Alfredo sauce',
+      ),
+    ]),
+    section('Pizza', [
+      item('Margherita', 16, 'Tomato sauce, mozzarella and fresh basil'),
+      item('Pepperoni', 20, 'Tomato sauce, mozzarella and pepperoni', { featured: 'popular' }),
+      item(
+        'Garden',
+        18,
+        'Tomato sauce, mozzarella, tomatoes, mushrooms, roasted red pepper, olives and onion',
+      ),
+      item('Calabrese', 22, 'Tomato sauce, mozzarella, red pepper, hot salami and black olives'),
+      item('Mushroom', 20, 'White pizza with mozzarella, mushroom, parsley and olive oil'),
+      item('Mushroom Caramelized Onion', 22, 'Mozzarella, garlic, mushroom and caramelized onion'),
+      item(
+        'Suicide',
+        24,
+        'Tomato sauce, mozzarella, soppressata, hot sausage, chili peppers, black olives and hot peppers',
+      ),
+      item(
+        'Pear & Brie',
+        22,
+        'Brie, mozzarella, sliced pears, walnuts and dried cranberry with a honey drizzle',
+      ),
+      item(
+        'La Veranda',
+        24,
+        'Tomato sauce, mozzarella, bocconcini, diced tomatoes, prosciutto, arugula and Grana Padano',
+        { featured: 'popular' },
       ),
     ]),
   ],
@@ -236,72 +244,69 @@ export const brunchMenu: Omit<Menu, 'id' | 'createdAt' | 'updatedAt'> = {
     section('Shareables', [
       item(
         'Brie Focaccia',
-        18,
-        'Freshly baked focaccia with a whole melted brie, served with pesto and jam',
+        20,
+        'Freshly baked focaccia with a whole melted brie, served with a side of pesto and jam',
       ),
       item(
         "Za'atar Focaccia",
-        12,
+        14,
         'Freshly baked focaccia with thyme, oregano, sesame seeds and olive oil, served with cucumber, olives and tomatoes',
         { addOns: [{ label: 'Add labneh', price: 3 }] },
       ),
-      item('Warm Olives Board', 15, 'Served with labneh and focaccia'),
-      item('Labneh Chili Jam', 15, 'Served with chili jam, pistachio and house-made focaccia'),
+      item('Warm Olives Board', 15, 'Served with labneh and focaccia bread'),
+      item('Labneh Chili Jam', 16, 'Served with chili jam, pistachio and house-made focaccia'),
+      item(
+        'Calamari Fritti',
+        20,
+        'Dusted with seasoned flour and mixed with lemon herbs. Served with marinara sauce',
+      ),
       item(
         'Burrata & Fig Salad',
         23,
-        'Sun-dried tomatoes and arugula with pesto balsamic vinaigrette and a fig glaze',
+        'Sun-dried tomatoes and arugula with pesto balsamic vinaigrette, drizzled with fig glaze',
       ),
       item(
         'Kale & Beets',
-        17,
+        18,
         'Shredded kale and beet, apple and cranberry with lemon pomegranate vinaigrette',
         { addOns: [{ label: 'Add chicken', price: 6 }] },
       ),
       item(
         'Mango Avocado Arugula Salad',
         22,
-        'Arugula tossed with mango and avocado in a mango-lime vinaigrette',
-      ),
-      item(
-        'Tabouleh',
-        14,
-        'Chopped parsley, mint, bulgur, tomato, sweet onion, radish and avocado with spiced lemon oil',
-      ),
-      item(
-        'Siciliana',
-        18,
-        'Wild arugula, orange, fennel, pistachio, dried olive, celery and caperberry with chili-prosecco dressing',
+        'Arugula tossed with mango slices and avocado, dressed in a mango-lime vinaigrette',
       ),
     ]),
     section('Savouries', [
       item(
         'Double B',
-        16,
-        'Two eggs your way and bread with bacon, potatoes and a side of fresh fruit',
+        17,
+        'Two eggs your way and bread, paired with bacon, potatoes and a side of fresh fruit',
+        // Hard to read on the photographed menu ("add jar of jam +1"?). Confirm with the owner.
+        { addOns: [{ label: 'Add a jar of jam', price: 1 }] },
       ),
       item(
         'Avocado Toast',
-        20,
-        'Avocado over toasted sourdough with poached eggs, fresh fruit and potatoes',
+        22,
+        'Avocado over toasted sourdough with poached eggs, served with fresh fruit and potatoes',
       ),
-      item('Steak & Eggs', null, 'With potatoes and chimichurri sauce', {
-        variants: [
-          { label: '8oz striploin', price: 36 },
-          { label: '10oz ribeye', price: 45 },
-        ],
+      item('Chicken & Waffle', 22, 'Crispy fried chicken with waffle, potatoes and syrup', {
+        featured: 'popular',
       }),
+      // Price partly hidden by glare on the photo (reads as 35). Confirm with the owner.
+      item('Steak & Eggs', 35, '8 oz ribeye, potatoes, arugula salad and chimichurri sauce'),
     ]),
     section(
       'Benedicts',
       [
         item('Salmon', 22, 'Smoked salmon with hollandaise sauce'),
-        item('Peameal Bacon', 18, 'With hollandaise sauce'),
+        item('Peameal Bacon', 18, 'Served with hollandaise sauce'),
         item(
           'Prosciutto Delight',
           20,
           'Sun-dried tomato paste, melted mozzarella and crispy prosciutto',
         ),
+        item('Braised Beef', 21, 'Braised beef and caramelized onion'),
       ],
       {
         isSubgroup: true,
@@ -342,36 +347,55 @@ export const brunchMenu: Omit<Menu, 'id' | 'createdAt' | 'updatedAt'> = {
       item(
         'Mixed Berries Pancakes',
         16,
-        'With house-made mixed berry compote, whipped cream and maple syrup',
+        'Made with house-made mixed berry compote, whipped cream and maple syrup',
       ),
-      item('Chocolate Chip Pancakes', 16, 'With whipped cream, Nutella and maple syrup'),
+      item('Chocolate Chip Pancakes', 16, 'Served with whipped cream, Nutella and maple syrup'),
       item(
         'Waffle Stack',
         16,
-        'Cinnamon waffle with fresh fruit, whipped cream, Nutella and maple syrup',
+        'Cinnamon waffle served with fresh fruit, whipped cream, Nutella and maple syrup',
       ),
-      item('Apple Waffle', 16, 'Cinnamon waffle with apple compote and vanilla ice cream'),
-      item('Yogurt Parfait', 12, 'Greek yogurt with fresh fruit, honey and granola'),
+      item('Apple Waffle', 18, 'Cinnamon waffle served with apple compote and vanilla ice cream'),
+      item('Yogurt Parfait', 12, 'Greek yogurt served with fresh fruit, honey and granola'),
     ]),
     section(
-      'Pies',
+      'Croffles',
       [
-        item('Mediterranean', 16, 'Feta, tomatoes, black olives, oregano and parsley'),
-        item('Spicy Calabrese', 16, 'Soppressata, spicy sausage, tomatoes and basil'),
+        item(
+          'Dubai Chocolate Strawberry',
+          19,
+          'Croissant waffle pressed until crisp, topped with chocolate, pistachio-kunafeh crunch and fresh strawberries',
+          { featured: 'recommendation' },
+        ),
+        item(
+          'Savory Pesto Ham',
+          20,
+          'Crisp croffle with ham and melted cheese and soft scrambled eggs, served with pesto and a balsamic arugula salad',
+        ),
+        item(
+          'Spicy Italian',
+          21,
+          'Croffle with Calabrese soppressata, roasted red pepper, olives and soft scrambled eggs, served with pesto and a balsamic arugula salad',
+        ),
       ],
-      { addOns: [{ label: 'Add one egg', price: 2 }] },
+      { description: 'Pressed croissant waffle' },
     ),
     section(
       'Sandwiches',
       [
-        item('B.E.L.T.', 18, 'Crispy bacon, eggs, lettuce and tomato topped with pesto mayo', {
+        item('B.E.L.T.', 19, 'Crispy bacon, eggs, lettuce and tomato topped with pesto mayo', {
           addOns: [{ label: 'Add chicken', price: 6 }],
         }),
-        item('Brie & Prosciutto', 20, 'Melted brie, prosciutto, arugula and balsamic glaze'),
+        item('Brie & Prosciutto', 21, 'Melted brie, prosciutto, arugula and balsamic glaze'),
         item(
           'Grilled Veggie',
-          16,
+          17,
           'Zucchini, eggplant, sautéed onion, arugula, black olives, artichoke and pesto mayo',
+        ),
+        item(
+          'Mortadella',
+          21,
+          'Mortadella, creamy burrata, pistachio mascarpone spread and arugula drizzled with pesto',
         ),
       ],
       { description: 'Served on house-made bread' },
@@ -380,18 +404,13 @@ export const brunchMenu: Omit<Menu, 'id' | 'createdAt' | 'updatedAt'> = {
       item('Margherita', 16, 'Tomato sauce, mozzarella and fresh basil'),
       item(
         'Garden',
-        17,
+        18,
         'Tomato sauce, mozzarella, tomatoes, mushrooms, roasted red pepper, olives and onion',
       ),
       item('Pepperoni', 18, 'Tomato sauce, mozzarella and pepperoni'),
       item(
-        'Mortadella',
-        20,
-        'Mortadella, creamy burrata, pistachio mascarpone spread and arugula drizzled with pesto',
-      ),
-      item(
         'La Diavola',
-        21,
+        22,
         "Tomato sauce, mozzarella, hot soppressata, spicy 'nduja sausage, roasted peppers and black olives",
       ),
     ]),
@@ -416,7 +435,7 @@ export const brunchMenu: Omit<Menu, 'id' | 'createdAt' | 'updatedAt'> = {
       item('Freshly Squeezed Orange Juice', 6),
       item('Iced Matcha Latte', 6),
       item('Iced or Hot Vanilla Latte', 5),
-      item('Cappuccino or Latte', 4.5),
+      item('Cappuccino or Latte', 5),
       item('Canadian Coffee', 3),
       item('Americano', 3.5),
       item('Espresso', 2.5),
