@@ -447,8 +447,18 @@ label {
 }
 
 .statement {
-  position: relative;
-  height: clamp(220px, 30vw, 410px);
+  height: clamp(260px, 36vw, 550px);
+  background-position: center;
+  background-size: cover;
+  background-attachment: fixed;
+}
+
+/* Phones and tablets don't support fixed backgrounds well (iOS zooms them), and reduced
+   motion users get a still photo: scroll normally there. */
+@media (hover: none), (prefers-reduced-motion: reduce) {
+  .statement {
+    background-attachment: scroll;
+  }
 }
 
 .visit-grid {
