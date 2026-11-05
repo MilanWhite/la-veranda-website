@@ -331,6 +331,13 @@ label {
   display: flex;
 }
 
+/* Closed right after choosing a page from it (see NavAutoClose) */
+@media (min-width: 1025px) {
+  .nav.nav-closed .has-dropdown .dropdown {
+    display: none;
+  }
+}
+
 .dropdown a {
   display: block;
   padding: 14px 20px;
