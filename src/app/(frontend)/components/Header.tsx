@@ -4,6 +4,7 @@ import { FaBars, FaCaretDown, FaEnvelope, FaPhoneAlt } from 'react-icons/fa'
 
 import logo from '@/assets/logo.png'
 import { getSiteSettings } from '../getSiteSettings'
+import { NavAutoClose } from './NavAutoClose'
 import { SocialLinks } from './SocialLinks'
 
 const nav = [
@@ -94,6 +95,7 @@ export async function Header() {
             Book an Event
           </Link>
         </nav>
+        <NavAutoClose />
       </div>
     </header>
   )
