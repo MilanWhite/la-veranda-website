@@ -62,10 +62,9 @@ export default async function ReservationsPage() {
       </section>
 
       <CtaSection
-        alt
         title="Planning a Private Event?"
         actions={[
-          { label: 'Book an Event', href: '/events#book-an-event', solid: true },
+          { label: 'Book an Event', href: '/events#book-an-event' },
           { label: 'Our Events', href: '/events' },
         ]}
       >

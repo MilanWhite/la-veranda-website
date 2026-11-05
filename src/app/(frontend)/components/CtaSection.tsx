@@ -1,43 +1,44 @@
-import Image, { type StaticImageData } from 'next/image'
+import { getImageProps, type StaticImageData } from 'next/image'
 import Link from 'next/link'
 import type { ReactNode } from 'react'
 
 import statement from '@/assets/statement.jpg'
 
-// Centered heading + text + button(s), used at the bottom of most pages.
-// `photo` puts the old site's statement photo (or another image) behind it, darkened.
+// The call-to-action at the bottom of a page. Every one looks the same: a darkened photo
+// that stays still while the page scrolls past (like the homepage), a heading, one or two
+// short sentences, and up to two buttons. The first button is the main action (solid), the
+// second is an alternative (outline).
 export function CtaSection({
   title,
   children,
   actions,
-  alt = false,
-  photo,
+  photo = statement,
 }: {
   title: string
   children: ReactNode
-  actions: { label: string; href: string; solid?: boolean }[]
-  alt?: boolean
-  photo?: true | StaticImageData
+  actions: [{ label: string; href: string }, { label: string; href: string }?]
+  photo?: StaticImageData
 }) {
-  const image = photo === true ? statement : photo
+  const src = getImageProps({ src: photo, alt: '', width: 1920 }).props.src
   return (
-    <section className={`section${alt ? ' section-alt' : ''}${image ? ' cta-photo' : ''}`}>
-      {image && <Image src={image} alt="" fill sizes="100vw" className="cover darken" />}
+    <section className="section cta-photo" style={{ ['--cta-image' as string]: `url(${src})` }}>
       <div className="container narrow center cta-content">
         <h2 className="section-title">{title}</h2>
         <div className="lead">{children}</div>
         <div className="button-row button-row-center">
-          {actions.map((a) =>
-            a.href.startsWith('/') ? (
-              <Link key={a.href} href={a.href} className={a.solid ? 'button-solid' : 'button'}>
+          {actions.flatMap((a, i) => {
+            if (!a) return []
+            const className = i === 0 ? 'button-solid' : 'button'
+            return a.href.startsWith('/') ? (
+              <Link key={a.href} href={a.href} className={className}>
                 {a.label}
               </Link>
             ) : (
-              <a key={a.href} href={a.href} className={a.solid ? 'button-solid' : 'button'}>
+              <a key={a.href} href={a.href} className={className}>
                 {a.label}
               </a>
-            ),
-          )}
+            )
+          })}
         </div>
       </div>
     </section>

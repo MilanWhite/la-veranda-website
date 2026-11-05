@@ -54,14 +54,15 @@ export async function MenuPage({
       </section>
 
       <CtaSection
-        photo
         title="Book Your Reservation"
-        actions={[{ label: 'Reservations', href: '/reservations' }]}
+        actions={[
+          { label: 'Reserve a Table', href: '/reservations' },
+          { label: 'Book an Event', href: '/events#book-an-event' },
+        ]}
       >
         <p>
-          Indulge in a delightful dining experience where exquisite flavours meet a charming
-          ambiance. Whether it’s a romantic dinner, a family gathering or a special celebration,
-          reserve your table and let us make your visit unforgettable.
+          A romantic dinner, a family gathering or a special celebration: reserve your table and let
+          us make your visit unforgettable.
         </p>
       </CtaSection>
     </>
