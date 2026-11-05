@@ -18,6 +18,7 @@ import weddingsBanner from '@/assets/weddings-banner.webp'
 import weddingsCelebration from '@/assets/weddings-celebration.webp'
 import { CtaSection } from '../components/CtaSection'
 import { PageBanner } from '../components/PageBanner'
+import { PhotoCarousel } from '../components/PhotoCarousel'
 import { getSiteSettings } from '../getSiteSettings'
 import { asMedia, getGallery } from '../lib/content'
 
@@ -264,19 +265,12 @@ export default async function WeddingsCorporatePage() {
           <div className="container">
             <h2 className="section-title">Moments at La Veranda</h2>
             <hr className="divider" />
-            <ul className="photo-grid">
-              {photos.map(({ image }) => (
-                <li key={image.id}>
-                  <Image
-                    src={image.url!}
-                    alt={image.alt}
-                    width={image.width ?? 1200}
-                    height={image.height ?? 800}
-                    sizes="(max-width: 600px) 100vw, (max-width: 1024px) 50vw, 400px"
-                  />
-                </li>
-              ))}
-            </ul>
+            <PhotoCarousel
+              label="Photos from weddings and events"
+              photos={photos.flatMap(({ image }) =>
+                image.url ? [{ id: image.id, url: image.url, alt: image.alt }] : [],
+              )}
+            />
             <p className="center">
               <Link href="/gallery" className="button">
                 View Gallery
