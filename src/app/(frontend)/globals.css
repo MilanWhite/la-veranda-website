@@ -1445,23 +1445,7 @@ label {
   margin: 0 0 1.2em;
 }
 
-.check-pills {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin: 0 0 28px;
-  padding: 0;
-  list-style: none;
-}
-
-.check-pills li {
-  padding: 6px 14px;
-  border: 1px solid var(--line);
-  font-size: 15px;
-}
-
-.highlight-grid,
-.steps {
+.highlight-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
   gap: clamp(24px, 3vw, 40px);
@@ -1471,20 +1455,17 @@ label {
   text-align: center;
 }
 
-.highlight-grid li,
-.steps li {
+.highlight-grid li {
   position: relative;
   padding: 30px 22px;
   border: 1px solid var(--line);
 }
 
-.highlight-grid h3,
-.steps h3 {
+.highlight-grid h3 {
   margin: 14px 0 10px;
 }
 
-.highlight-grid p,
-.steps p {
+.highlight-grid p {
   margin: 0;
   font-size: 16px;
   opacity: 0.85;
@@ -1495,54 +1476,73 @@ label {
   font-size: 30px;
 }
 
-.step-number {
-  position: absolute;
-  top: -16px;
-  left: 50%;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: var(--accent);
-  color: var(--black);
-  font-weight: 700;
-  transform: translateX(-50%);
-}
-
+/* How it works: four plain columns, a thin line above each, the way the steps read left to
+   right. No icons, numbers or colour. */
 .steps {
-  row-gap: clamp(36px, 4vw, 44px);
-}
-
-.course-list {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
-  gap: 24px;
-  margin: 30px 0;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+  gap: 40px clamp(24px, 3vw, 40px);
+  margin: 0;
   padding: 0;
   list-style: none;
 }
 
-.course-list li {
-  padding: 24px 18px;
-  border-top: 2px solid var(--accent);
-  background: var(--black);
+.steps li {
+  padding-top: 24px;
+  border-top: 1px solid var(--line);
 }
 
-.course-number {
-  color: var(--accent);
+.steps h3 {
+  margin: 0 0 12px;
+  font-size: 24px;
+}
+
+.steps p {
+  margin: 0;
+  font-size: 17px;
+  opacity: 0.85;
+}
+
+/* Event menu: the three courses in order, laid out like the Specials cards with smaller
+   photos. "To start / Then / Finally" leads the eye through the meal. */
+.course-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 340px));
+  justify-content: center;
+  gap: 40px clamp(24px, 3vw, 40px);
+  margin: 40px 0 30px;
+  padding: 0;
+  list-style: none;
+  text-align: left;
+}
+
+.course-list li {
+  overflow: hidden;
+}
+
+.course-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-bottom: 20px;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+}
+
+.course-step {
+  margin: 0 0 4px;
   font-size: 14px;
-  font-weight: 600;
-  letter-spacing: 2px;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  opacity: 0.7;
 }
 
 .course-list h3 {
-  margin: 6px 0 8px;
+  margin: 0 0 10px;
+  font-size: 28px;
 }
 
-.course-list p {
+.course-list p:last-child {
   margin: 0;
-  font-size: 16px;
   opacity: 0.85;
 }
