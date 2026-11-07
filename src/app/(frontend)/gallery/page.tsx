@@ -36,7 +36,10 @@ export default async function GalleryPage() {
       <CtaSection
         photo={galleryCta}
         title="Book Your Event"
-        actions={[{ label: 'Book an Event', href: '/events#book-an-event', solid: true }]}
+        actions={[
+          { label: 'Book an Event', href: '/events#book-an-event' },
+          { label: 'Reserve a Table', href: '/reservations' },
+        ]}
       >
         <p>
           From birthdays to weddings, we have done it all. Your next event is just a click away.
