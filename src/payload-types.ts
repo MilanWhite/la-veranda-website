@@ -259,7 +259,7 @@ export interface Media {
   focalY?: number | null;
 }
 /**
- * Special events and holiday menus shown on /specials. Untick "Active" to hide one.
+ * Special events and holiday menus shown on /specials. One-time specials disappear by themselves after their date; repeating ones (e.g. Salsa Night) always show their next date. Untick "Active" to hide one.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "specials".
@@ -268,9 +268,22 @@ export interface Special {
   id: number;
   title: string;
   /**
-   * Optional. Specials are listed by date.
+   * Optional for one-time specials. For a repeating special: the first date, and the time it starts every time.
    */
   date?: string | null;
+  /**
+   * Untick to show only the day (e.g. when the time is not set yet).
+   */
+  showTime?: boolean | null;
+  repeat?: {
+    frequency?: ('none' | 'weekly' | 'monthly') | null;
+    week?: ('first' | 'second' | 'third' | 'fourth' | 'last') | null;
+    weekday?: ('sunday' | 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday') | null;
+    /**
+     * Leave empty to keep repeating.
+     */
+    until?: string | null;
+  };
   description?: string | null;
   image?: (number | null) | Media;
   /**
@@ -474,6 +487,15 @@ export interface MenusSelect<T extends boolean = true> {
 export interface SpecialsSelect<T extends boolean = true> {
   title?: T;
   date?: T;
+  showTime?: T;
+  repeat?:
+    | T
+    | {
+        frequency?: T;
+        week?: T;
+        weekday?: T;
+        until?: T;
+      };
   description?: T;
   image?: T;
   cta?:

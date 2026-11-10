@@ -204,6 +204,32 @@ async function seedSpecials(payload: Payload) {
   }
 }
 
+// La Veranda's monthly Salsa Night (last Friday of every month). The time isn't confirmed
+// yet, so the site shows only the day until the owner sets it and ticks "Show the time".
+async function seedSalsaNight(payload: Payload) {
+  const { totalDocs } = await payload.count({
+    collection: 'specials',
+    where: { title: { equals: 'Salsa Night' } },
+  })
+  if (totalDocs > 0) return
+  const image = await upsertMedia(payload, 'gallery-09.webp', 'Guests dancing at a celebration')
+  log('special: Salsa Night')
+  await payload.create({
+    collection: 'specials',
+    data: {
+      title: 'Salsa Night',
+      date: '2026-11-28T02:00:00.000Z', // Fri Nov 27 2026, 9:00pm Toronto (placeholder time)
+      showTime: false,
+      repeat: { frequency: 'monthly', week: 'last', weekday: 'friday' },
+      description:
+        'On the last Friday of every month, La Veranda turns into a dance floor. Come for dinner, stay for the salsa.',
+      image: image.id,
+      active: true,
+    },
+  })
+}
+
+
 async function seedAdmin(payload: Payload) {
   const email = process.env.SEED_ADMIN_EMAIL
   const password = process.env.SEED_ADMIN_PASSWORD
@@ -220,6 +246,7 @@ await seedGroupMenu(payload)
 await seedMenus(payload)
 await seedGallery(payload)
 await seedSpecials(payload)
+await seedSalsaNight(payload)
 await seedAdmin(payload)
 log('done')
 process.exit(0)
