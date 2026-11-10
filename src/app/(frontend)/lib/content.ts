@@ -3,6 +3,7 @@ import { cache } from 'react'
 
 import type { Media, Menu } from '@/payload-types'
 import config from '@/payload.config'
+import { nextOccurrence } from '@/lib/recurrence'
 
 const payload = () => getPayload({ config })
 
@@ -13,11 +14,17 @@ export const getMenu = cache(async (slug: Menu['slug']) => {
   return docs[0] ?? null
 })
 
+// Active specials that are still to come, soonest first, each with the date it happens
+// next (`next`: a repeating special's next date, or a one-time special's own date). Past
+// one-time specials drop off by themselves; specials without a date are listed last.
 export const getActiveSpecials = cache(async () => {
   const { docs } = await (
     await payload()
   ).find({ collection: 'specials', where: { active: { equals: true } }, sort: 'date', limit: 50 })
   return docs
+    .map((special) => ({ ...special, next: nextOccurrence(special.date, special.repeat) }))
+    .filter((special) => special.next || !special.date)
+    .sort((a, b) => (a.next?.getTime() ?? Infinity) - (b.next?.getTime() ?? Infinity))
 })
 
 export const getGallery = cache(async () => {

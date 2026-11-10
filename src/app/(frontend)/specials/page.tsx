@@ -8,6 +8,7 @@ import { CtaSection } from '../components/CtaSection'
 import { PageBanner } from '../components/PageBanner'
 import { SocialLinks } from '../components/SocialLinks'
 import { getSiteSettings } from '../getSiteSettings'
+import { describeRepeat, TIME_ZONE } from '@/lib/recurrence'
 import { asMedia, getActiveSpecials } from '../lib/content'
 
 export const metadata: Metadata = {
@@ -15,11 +16,17 @@ export const metadata: Metadata = {
   description: 'Holiday brunches, special menus and upcoming events at La Veranda in Woodbridge.',
 }
 
-const dateFormat = new Intl.DateTimeFormat('en-CA', {
-  timeZone: 'America/Toronto',
-  weekday: 'long',
-  month: 'long',
+// Repeating specials move to their next date on their own, so rebuild this page hourly.
+export const revalidate = 3600
+
+// "27 November" like the old site
+const dayFormat = new Intl.DateTimeFormat('en-GB', {
+  timeZone: TIME_ZONE,
   day: 'numeric',
+  month: 'long',
+})
+const timeFormat = new Intl.DateTimeFormat('en-CA', {
+  timeZone: TIME_ZONE,
   hour: 'numeric',
   minute: '2-digit',
 })
@@ -40,6 +47,7 @@ export default async function SpecialsPage() {
             <ul className="card-grid">
               {specials.map((special) => {
                 const image = asMedia(special.image)
+                const repeat = describeRepeat(special.repeat)
                 return (
                   <li key={special.id} className="card">
                     {image?.url && (
@@ -54,11 +62,14 @@ export default async function SpecialsPage() {
                     )}
                     <div className="card-body">
                       <h3>{special.title}</h3>
-                      {special.date && (
+                      {/* One line, e.g. "Last Friday of every month · 27 November" */}
+                      {special.next && (
                         <p className="card-meta">
-                          <FaRegClock aria-hidden />{' '}
-                          <time dateTime={special.date}>
-                            {dateFormat.format(new Date(special.date))}
+                          <FaRegClock aria-hidden />
+                          {repeat && `${repeat} · `}
+                          <time dateTime={special.next.toISOString()}>
+                            {dayFormat.format(special.next)}
+                            {special.showTime !== false && `, ${timeFormat.format(special.next)}`}
                           </time>
                         </p>
                       )}
