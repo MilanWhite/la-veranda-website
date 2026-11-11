@@ -12,6 +12,7 @@ import { Specials } from './collections/Specials'
 import { Users } from './collections/Users'
 import { Gallery } from './globals/Gallery'
 import { SiteSettings } from './globals/SiteSettings'
+import { emailAdapter } from './lib/mail'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -26,6 +27,7 @@ export default buildConfig({
   collections: [ContactMessages, Menus, Specials, Media, Users],
   globals: [Gallery, SiteSettings],
   editor: lexicalEditor(),
+  email: emailAdapter(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),
