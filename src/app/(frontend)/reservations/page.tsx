@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 
 import reservationsBanner from '@/assets/reservations-banner.webp'
 import { CtaSection } from '../components/CtaSection'
+import { EmailButton } from '../components/EmailButton'
 import { HoursList } from '../components/HoursList'
 import { PageBanner } from '../components/PageBanner'
 import { getSiteSettings } from '../getSiteSettings'
@@ -41,14 +42,7 @@ export default async function ReservationsPage() {
                   Call {settings.phone}
                 </a>
               )}
-              {settings.email && (
-                <a
-                  href={`mailto:${settings.email}?subject=${encodeURIComponent('Table reservation')}`}
-                  className="button"
-                >
-                  Email Us
-                </a>
-              )}
+              {settings.email && <EmailButton email={settings.email} subject="Table reservation" />}
             </div>
           </div>
 

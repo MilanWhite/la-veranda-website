@@ -1,6 +1,8 @@
 'use client'
 
-import { useActionState } from 'react'
+import { useActionState, useEffect, useRef } from 'react'
+
+import { Turnstile, type TurnstileHandle } from '../components/Turnstile'
 
 import { type ContactField, type ContactFormState, sendContactMessage } from './actions'
 
@@ -51,6 +53,10 @@ function Field({
 
 export function ContactForm() {
   const [state, formAction, pending] = useActionState(sendContactMessage, initialState)
+  const turnstile = useRef<TurnstileHandle>(null)
+  useEffect(() => {
+    if (state.status === 'error') turnstile.current?.reset()
+  }, [state])
 
   if (state.status === 'success') {
     return (
@@ -89,6 +95,8 @@ export function ContactForm() {
         <label htmlFor="contact-website">Website</label>
         <input id="contact-website" name="website" tabIndex={-1} autoComplete="off" />
       </div>
+
+      <Turnstile ref={turnstile} />
 
       {state.status === 'error' && state.message && (
         <p className="form-error" role="alert">
