@@ -7,6 +7,8 @@ const __filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(__filename)
 
 const nextConfig: NextConfig = {
+  // Rendered on the server only (booking summary PDF)
+  serverExternalPackages: ['@react-pdf/renderer'],
   images: {
     localPatterns: [
       {
