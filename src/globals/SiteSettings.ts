@@ -5,7 +5,7 @@ import { revalidateGlobalAfterChange } from '../hooks/revalidateSite'
 
 export const SiteSettings: GlobalConfig = {
   slug: 'site-settings',
-  admin: { group: 'Settings' },
+  admin: { group: 'Website' },
   access: {
     read: () => true,
     update: authenticated,

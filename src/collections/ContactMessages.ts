@@ -10,7 +10,8 @@ export const ContactMessages: CollectionConfig = {
   admin: {
     useAsTitle: 'email',
     defaultColumns: ['firstName', 'lastName', 'email', 'phone', 'handled', 'createdAt'],
-    group: 'Inbox',
+    group: 'Bookings',
+
     description: 'Messages sent through the form on the Contact page. Tick "Handled" once replied.',
   },
   defaultSort: '-createdAt',
