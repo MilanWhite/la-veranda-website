@@ -6,53 +6,32 @@ import hero from '@/assets/hero.webp'
 import kitchen from '@/assets/kitchen.webp'
 import statement from '@/assets/statement.jpg'
 import { ContactList } from './components/ContactList'
+import { HoursList } from './components/HoursList'
+import { directionsUrl, MapEmbed } from './components/MapEmbed'
+import { MenuSections } from './components/MenuSections'
 import { getSiteSettings } from './getSiteSettings'
+import { getMenu } from './lib/content'
 
-// Temporary: replaced by menu data in Stage 6.
-const dishes = {
-  'Popular Dishes': [
-    { name: 'Pepperoni Pizza', description: 'Tomato sauce, cheese and pepperoni', price: 16 },
-    {
-      name: 'La Veranda Pizza',
-      description: 'Bocconcini, cherry tomato, prosciutto, arugula, Grana Padano, red or white',
-      price: 22,
-    },
-    {
-      name: 'La Veranda Porchetta',
-      description:
-        'Slow roasted pork shoulder / house baked focaccia / caramelized onions / rapini / roasted garlic aioli',
-      price: 16,
-    },
-    {
-      name: 'Polipo Alla Griglia',
-      description: 'Grilled octopus / balsamic reduction / chickpea / arugula',
-      price: 26,
-    },
-  ],
-  'Our Recommendation': [
-    { name: 'Hummus', description: 'Chickpea, roasted garlic, smoked paprika and lemon', price: 6 },
-    {
-      name: 'Grilled Organic Salmon Filet',
-      description: 'Wilted kale and mixed mushroom salad, warm pancetta – truffle dressing',
-      price: 24,
-    },
-    {
-      name: 'Spigola',
-      description:
-        'Grilled whole European sea bass / stewed fregola / leeks / rapini / cauliflower / clams',
-      price: 32,
-    },
-    {
-      name: 'Gnocchi E Ragu Di Agnello',
-      description: 'Potato gnocchi / stewed lamb and tomato',
-      price: 20,
-    },
-  ],
+// Dinner-menu items marked "Show on homepage" in the admin, grouped like the old site.
+async function getFeaturedDishes() {
+  const menu = await getMenu('dinner')
+  const items = (menu?.sections ?? []).flatMap((s) => s.items ?? [])
+  const groups = [
+    { id: 'popular', title: 'Popular Dishes' },
+    { id: 'recommendation', title: 'Our Recommendation' },
+  ] as const
+  return groups
+    .map((g) => ({
+      id: g.id,
+      title: g.title,
+      items: items.filter((i) => i.featured === g.id && i.available !== false),
+    }))
+    .filter((g) => g.items.length > 0)
 }
 
 export default async function HomePage() {
-  const settings = await getSiteSettings()
-  const mapQuery = settings.address && encodeURIComponent(settings.address.replace(/\s+/g, ' '))
+  const [settings, featured] = await Promise.all([getSiteSettings(), getFeaturedDishes()])
+  const directions = directionsUrl(settings)
 
   return (
     <>
@@ -101,34 +80,26 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="section section-alt">
-        <div className="container">
-          <h2 className="section-title">Our Menu</h2>
-          <hr className="divider" />
-          <div className="dish-grid">
-            {Object.entries(dishes).map(([heading, items]) => (
-              <div key={heading}>
-                <p className="eyebrow eyebrow-accent">{heading}</p>
-                {items.map((dish) => (
-                  <div key={dish.name} className="dish">
-                    <div className="leader-row">
-                      <h3>{dish.name}</h3>
-                      <span className="leader-line" />
-                      <span className="leader-value">${dish.price}</span>
-                    </div>
-                    <p>{dish.description}</p>
-                  </div>
-                ))}
-              </div>
-            ))}
+      {featured.length > 0 && (
+        <section className="section section-alt">
+          <div className="container">
+            <h2 className="section-title">Our Menu</h2>
+            <hr className="divider" />
+            <div className="dish-grid">
+              {featured.map((group) => (
+                <div key={group.id}>
+                  <MenuSections sections={[group]} />
+                </div>
+              ))}
+            </div>
+            <p className="center">
+              <Link href="/menu" className="button">
+                View Our Menu
+              </Link>
+            </p>
           </div>
-          <p className="center">
-            <Link href="/menu" className="button">
-              View Our Menu
-            </Link>
-          </p>
-        </div>
-      </section>
+        </section>
+      )}
 
       <section className="statement">
         <Image src={statement} alt="" fill sizes="100vw" className="cover" />
@@ -142,42 +113,19 @@ export default async function HomePage() {
             <div className="visit-col">
               <p className="eyebrow eyebrow-accent">Find Us</p>
               <ContactList settings={settings} />
-              {mapQuery && (
-                <iframe
-                  className="map"
-                  src={`https://www.google.com/maps?q=${mapQuery}&output=embed`}
-                  title={`Map of ${settings.restaurantName}`}
-                  loading="lazy"
-                />
-              )}
+              <MapEmbed settings={settings} />
             </div>
 
             <div className="visit-col">
               {settings.hours && settings.hours.length > 0 && (
                 <>
                   <p className="eyebrow eyebrow-accent">Opening Hours</p>
-                  <ul className="hours-list">
-                    {settings.hours.map((h) => (
-                      <li key={h.id}>
-                        <div className="leader-row">
-                          <h3>{h.days}</h3>
-                          <span className="leader-line" />
-                          <span className="leader-value">{h.time}</span>
-                        </div>
-                        {h.note && <p className="hours-note">{h.note}</p>}
-                      </li>
-                    ))}
-                  </ul>
+                  <HoursList hours={settings.hours} />
                 </>
               )}
               <div className="button-row">
-                {mapQuery && (
-                  <a
-                    href={`https://www.google.com/maps/dir/?api=1&destination=${mapQuery}`}
-                    className="button"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
+                {directions && (
+                  <a href={directions} className="button" target="_blank" rel="noopener noreferrer">
                     Get Directions
                   </a>
                 )}
