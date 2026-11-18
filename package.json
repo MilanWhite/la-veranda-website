@@ -13,7 +13,10 @@
     "migrate": "npm run payload migrate",
     "migrate:create": "npm run payload migrate:create",
     "generate:types": "npm run payload generate:types",
-    "generate:importmap": "npm run payload generate:importmap"
+    "generate:importmap": "npm run payload generate:importmap",
+    "seed": "cross-env NODE_OPTIONS=--no-deprecation payload run src/seed/index.ts",
+    "db:reset": "node scripts/db-reset.mjs",
+    "db:test:setup": "node scripts/db-reset.mjs --test --yes"
   },
   "dependencies": {
     "@payloadcms/db-postgres": "3.90.2",
