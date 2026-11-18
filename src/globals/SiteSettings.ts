@@ -37,6 +37,13 @@ export const SiteSettings: GlobalConfig = {
       ],
     },
     {
+      name: 'groupMenuPdf',
+      label: 'Event group menu (PDF)',
+      type: 'upload',
+      relationTo: 'media',
+      admin: { description: 'Linked as "Download Group Menu" on the Events page.' },
+    },
+    {
       name: 'seo',
       label: 'Default SEO',
       type: 'group',

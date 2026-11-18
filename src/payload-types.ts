@@ -579,6 +579,10 @@ export interface SiteSetting {
         id?: string | null;
       }[]
     | null;
+  /**
+   * Linked as "Download Group Menu" on the Events page.
+   */
+  groupMenuPdf?: (number | null) | Media;
   seo?: {
     title?: string | null;
     description?: string | null;
@@ -636,6 +640,7 @@ export interface SiteSettingsSelect<T extends boolean = true> {
         note?: T;
         id?: T;
       };
+  groupMenuPdf?: T;
   seo?:
     | T
     | {
