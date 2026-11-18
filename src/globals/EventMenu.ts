@@ -24,6 +24,12 @@ export const EventMenu: GlobalConfig = {
   },
   fields: [
     {
+      // Opens the tab named in the link, e.g. #reply-templates (from a request's Reply menu)
+      name: 'openTab',
+      type: 'ui',
+      admin: { components: { Field: '/components/admin/OpenTabFromHash#OpenTabFromHash' } },
+    },
+    {
       type: 'tabs',
       tabs: [
         {
@@ -337,6 +343,38 @@ export const EventMenu: GlobalConfig = {
                   type: 'array',
                   admin: { components: rowLabel },
                   fields: [{ name: 'label', type: 'text', required: true }],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          label: 'Reply Templates',
+          description:
+            'Ready-made replies for the Reply button on a request. Placeholders are filled in from the request: {name} (contact person, or the name/company), {company}, {number}, {eventType}, {date}, {time}, {guests}. You can edit the message before sending; it goes out as a reply in the customer’s conversation (subject “Re: Your event request #… at La Veranda”).',
+          fields: [
+            {
+              name: 'replyTemplates',
+              label: 'Reply templates',
+              labels: { singular: 'Template', plural: 'Templates' },
+              type: 'array',
+              // Staff-only wording: not part of the public form data
+              access: { read: ({ req }) => Boolean(req.user) },
+              admin: { components: rowLabel, initCollapsed: true },
+              fields: [
+                {
+                  name: 'name',
+                  label: 'Name (shown in the Reply menu)',
+                  type: 'text',
+                  required: true,
+                  admin: { placeholder: 'e.g. Ready to proceed' },
+                },
+                {
+                  name: 'body',
+                  label: 'Message',
+                  type: 'textarea',
+                  required: true,
+                  admin: { rows: 10 },
                 },
               ],
             },

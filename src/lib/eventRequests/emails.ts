@@ -1,3 +1,4 @@
+import { randomUUID } from 'crypto'
 import fs from 'fs'
 import path from 'path'
 import type { Payload } from 'payload'
@@ -10,9 +11,18 @@ import { formatDate, formatTime, requestNotes, summaryRows } from './summary'
 // Sends the customer confirmation and the restaurant notification, each with the PDF,
 // then records the result on the request. A failed email never removes the request.
 
-// Subject of the customer's confirmation email (it includes the request number).
+// The customer's confirmation and every reply from the admin share this subject (replies add
+// "Re:"), so they show as one conversation for the customer and in the restaurant's Sent mail.
 export const conversationSubject = (r: EventRequest) =>
   `Your event request #${r.requestNumber} at La Veranda`
+
+// A new email ID for each confirmation sent (a resend must not reuse one: Gmail drops
+// emails whose ID it has already seen). Replies point to it.
+function newMessageId() {
+  const domain =
+    (process.env.EMAIL_FROM || process.env.SMTP_USER || '').split('@')[1] || 'localhost'
+  return `<event-request.${randomUUID()}@${domain}>`
+}
 
 const logoAttachment = () => ({
   filename: 'la-veranda.png',
@@ -96,6 +106,7 @@ export async function sendRequestEmails(payload: Payload, request: EventRequest)
   if (!ownerEmails.length && settings.email) ownerEmails.push(settings.email)
 
   let customer: Status = 'skipped'
+  let messageId: string | null = null
   let owner: Status = 'skipped'
   const errors: string[] = []
 
@@ -111,10 +122,13 @@ export async function sendRequestEmails(payload: Payload, request: EventRequest)
       ...(pdf ? [{ filename: pdfFilename(request), content: pdf }] : []),
     ]
     try {
+      messageId = newMessageId()
       await payload.sendEmail({
         to: request.customer.email,
-        replyTo: settings.email || undefined,
+        // Customer replies go to the mailbox that the admin's replies come from
+        replyTo: settings.internal?.replyFromEmail || settings.email || undefined,
         subject: conversationSubject(request),
+        messageId,
         html: customerEmailHtml(request),
         attachments,
       })
@@ -161,8 +175,60 @@ export async function sendRequestEmails(payload: Payload, request: EventRequest)
         owner,
         sentAt: customer === 'sent' || owner === 'sent' ? new Date().toISOString() : null,
         error: errors.join(' | ') || null,
+        // Keep the last delivered confirmation's ID so replies stay in its conversation
+        confirmationMessageId:
+          customer === 'sent' ? messageId : (request.emails?.confirmationMessageId ?? null),
       },
     },
   })
   return { customer, owner, errors }
+}
+
+// A reply written in the admin, sent as the restaurant to the customer. It's marked as a reply
+// to the confirmation email (same subject with "Re:", plus In-Reply-To/References), so the
+// customer's email app and the restaurant's Sent mail show one conversation. Recorded in History.
+export async function sendCustomerReply(
+  payload: Payload,
+  request: EventRequest,
+  { message, attachPdf, sentBy }: { message: string; attachPdf?: boolean; sentBy?: string },
+) {
+  if (!isEmailConfigured()) throw new Error('Email is not set up, so replies can’t be sent.')
+  const settings = await payload.findGlobal({
+    slug: 'site-settings',
+    depth: 0,
+    overrideAccess: true,
+  })
+  const original = request.emails?.confirmationMessageId || undefined
+  const html = `<div style="font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.6;color:#222">${escapeHtml(
+    message,
+  ).replace(/\n/g, '<br>')}</div>`
+
+  await payload.sendEmail({
+    to: request.customer.email,
+    replyTo: settings.internal?.replyFromEmail || settings.email || undefined,
+    subject: `Re: ${conversationSubject(request)}`,
+    messageId: newMessageId(),
+    ...(original ? { inReplyTo: original, references: [original] } : {}),
+    text: message,
+    html,
+    attachments: attachPdf
+      ? [{ filename: pdfFilename(request), content: await renderBookingPdf(request) }]
+      : [],
+  })
+
+  const firstLine = message
+    .split('\n')
+    .find((l) => l.trim() && !/^(hi|hello|dear)\b/i.test(l.trim()))
+  await payload.update({
+    collection: 'event-requests',
+    id: request.id,
+    overrideAccess: true,
+    context: {
+      skipCalendar: true,
+      activity: [
+        `Reply emailed to customer${sentBy ? ` by ${sentBy}` : ''}${attachPdf ? ' (with PDF)' : ''}: “${(firstLine ?? message).trim().slice(0, 120)}${(firstLine ?? message).trim().length > 120 ? '…' : ''}”`,
+      ],
+    },
+    data: {},
+  })
 }

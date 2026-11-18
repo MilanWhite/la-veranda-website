@@ -552,6 +552,61 @@ body:has(.collection-edit--event-requests) .doc-header {
   gap: 8px;
 }
 
+// ── Reply menu (templates) ────────────────────────────────────────
+.lv-reply {
+  position: relative;
+}
+
+.lv-reply-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  min-width: 220px;
+  padding: 6px;
+  border: 1px solid var(--theme-elevation-150);
+  border-radius: 8px;
+  background: var(--theme-elevation-0);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+
+  a,
+  button,
+  .lv-reply-note {
+    padding: 9px 12px;
+    border: 0;
+    background: none;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+    border-radius: 6px;
+    color: var(--theme-text);
+    font-size: 14px;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  a:hover,
+  a:focus-visible,
+  button:hover,
+  button:focus-visible {
+    background: var(--theme-elevation-50);
+  }
+
+  .lv-reply-note {
+    color: var(--theme-elevation-500);
+  }
+
+  .lv-reply-edit {
+    margin-top: 4px;
+    border-top: 1px solid var(--theme-elevation-100);
+    border-radius: 0 0 6px 6px;
+    color: var(--theme-elevation-500);
+    font-size: 13px;
+  }
+}
+
 // Reply window
 .lv-reply-dialog {
   width: min(720px, calc(100vw - 32px));
