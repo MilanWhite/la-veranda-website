@@ -22,7 +22,15 @@ Requirements: Node.js 20+, PostgreSQL running locally.
    npm run migrate
    ```
 
-4. Start the dev server:
+4. Fill the database with placeholder content (menus, gallery, specials, site settings):
+
+   ```bash
+   npm run seed
+   ```
+
+   Safe to re-run: it only adds what is missing and never overwrites admin edits.
+
+5. Start the dev server:
 
    ```bash
    npm run dev
@@ -48,6 +56,22 @@ V1 has one role: every user is an administrator. Access rules live in `src/acces
 | `npm run migrate`        | Apply pending migrations                     |
 | `npm run migrate:create` | Create a migration after changing the schema |
 | `npm run generate:types` | Regenerate `src/payload-types.ts`            |
+| `npm run seed`           | Add placeholder content (idempotent)         |
+| `npm run db:reset`       | Wipe dev DB + uploads, migrate, seed         |
+| `npm run db:test:setup`  | Create/reset the test DB, migrate, seed      |
+
+## Databases
+
+| Database         | Used by         | Uploads folder | How to (re)create       |
+| ---------------- | --------------- | -------------- | ----------------------- |
+| `laveranda`      | `npm run dev`   | `media/`       | `npm run db:reset`      |
+| `laveranda_test` | automated tests | `media-test/`  | `npm run db:test:setup` |
+
+- Both are created automatically if they don't exist.
+- `db:reset` asks you to type `reset` first and **deletes everything, including admin users**. Set `SEED_ADMIN_EMAIL` / `SEED_ADMIN_PASSWORD` in `.env` to have the seed recreate an admin, or create one at `/admin` again.
+- The reset script refuses to run against a non-localhost database or with `NODE_ENV=production`.
+- The test database defaults to the dev database name + `_test`; override with `DATABASE_URL_TEST`.
+- Seed content lives in `src/seed/` (`menus.ts` for menu data, `images/` and `files/` for uploads).
 
 ## Database changes
 
@@ -61,11 +85,20 @@ Schema sync (`push`) is disabled. After changing a collection or global:
 
 ```
 src/
-  app/(frontend)/   public website pages
+  app/(frontend)/   public website pages, components/ and lib/ (data loaders)
   app/(payload)/    Payload admin + API (generated, rarely edited)
-  collections/      Payload collections
+  collections/      Payload collections (Menus, Specials, Media, Users)
+  globals/          Payload globals (Site Settings, Gallery)
+  hooks/            shared Payload hooks (page revalidation)
+  components/admin/ custom admin UI components
   migrations/       database migrations
+  seed/             placeholder content + seed script
   payload.config.ts Payload configuration
+scripts/            db reset / test-db setup
 ```
+
+Public pages are prerendered. Editing content in the admin clears the cached pages
+(`src/hooks/revalidateSite.ts`), so changes appear immediately. Changes made outside the
+running site (e.g. `npm run seed`) show up after the next restart or rebuild.
 
 Project progress is tracked in [docs/project_progress.md](docs/project_progress.md).
