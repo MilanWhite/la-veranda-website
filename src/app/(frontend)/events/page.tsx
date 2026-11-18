@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { FaRegCheckCircle } from 'react-icons/fa'
 
 import eventsBanner from '@/assets/events-banner.webp'
+import weddingsBanner from '@/assets/weddings-banner.webp'
 import { CtaSection } from '../components/CtaSection'
 import { FormPlaceholder } from '../components/FormPlaceholder'
 import { PageBanner } from '../components/PageBanner'
@@ -95,7 +96,29 @@ export default async function EventsPage() {
         </div>
       </section>
 
-      <section id="book-an-event" className="section section-alt anchor-target">
+      <section className="section section-alt">
+        <div className="container feature-row">
+          <Image
+            src={weddingsBanner}
+            alt="La Veranda's event room decorated with greenery and a chandelier"
+            className="feature-row-image"
+            sizes="(max-width: 900px) 100vw, 50vw"
+          />
+          <div className="feature-row-text">
+            <p className="eyebrow eyebrow-accent">Weddings & Corporate</p>
+            <h2>Planning a Wedding or Corporate Event?</h2>
+            <p>
+              From engagement parties and bridal showers to full wedding receptions and corporate
+              functions, see how La Veranda can host your biggest days.
+            </p>
+            <Link href="/weddings-corporate" className="button">
+              Weddings & Corporate Events
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      <section id="book-an-event" className="section anchor-target">
         <div className="container narrow">
           <h2 className="section-title">Event Contract</h2>
           <p className="lead center">
@@ -120,7 +143,7 @@ export default async function EventsPage() {
       </section>
 
       {photos.length > 0 && (
-        <section className="section">
+        <section className="section section-alt">
           <div className="container">
             <h2 className="section-title">Our Events</h2>
             <hr className="divider" />
