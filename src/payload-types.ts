@@ -67,8 +67,10 @@ export interface Config {
   };
   blocks: {};
   collections: {
-    users: User;
+    menus: Menu;
+    specials: Special;
     media: Media;
+    users: User;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -76,8 +78,10 @@ export interface Config {
   };
   collectionsJoins: {};
   collectionsSelect: {
-    users: UsersSelect<false> | UsersSelect<true>;
+    menus: MenusSelect<false> | MenusSelect<true>;
+    specials: SpecialsSelect<false> | SpecialsSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
+    users: UsersSelect<false> | UsersSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -88,9 +92,11 @@ export interface Config {
   };
   fallbackLocale: null;
   globals: {
+    gallery: Gallery;
     'site-settings': SiteSetting;
   };
   globalsSelect: {
+    gallery: GallerySelect<false> | GallerySelect<true>;
     'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
   };
   locale: null;
@@ -122,6 +128,147 @@ export interface UserAuthOperations {
   };
 }
 /**
+ * The dinner and brunch menus shown on /menu and /brunch-menu.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "menus".
+ */
+export interface Menu {
+  id: number;
+  title: string;
+  slug: 'dinner' | 'brunch';
+  /**
+   * Optional text under the title.
+   */
+  intro?: string | null;
+  pdf?: (number | null) | Media;
+  pdfLabel?: string | null;
+  /**
+   * Drag sections and items to reorder them.
+   */
+  sections?:
+    | {
+        title: string;
+        /**
+         * e.g. "Benedicts" inside Savouries. Shown with a smaller heading.
+         */
+        isSubgroup?: boolean | null;
+        /**
+         * e.g. "Served on an English muffin with poached eggs…"
+         */
+        description?: string | null;
+        /**
+         * Shown after the items, e.g. "All pasta is made in-house".
+         */
+        note?: string | null;
+        /**
+         * Extras that apply to every item in this section.
+         */
+        addOns?:
+          | {
+              label: string;
+              price: number;
+              id?: string | null;
+            }[]
+          | null;
+        items?:
+          | {
+              name: string;
+              description?: string | null;
+              /**
+               * Leave empty if there are size options.
+               */
+              price?: number | null;
+              /**
+               * Shown before the price, e.g. "10oz".
+               */
+              priceLabel?: string | null;
+              /**
+               * e.g. Glass $12 · Pitcher $45. Use instead of a single price.
+               */
+              variants?:
+                | {
+                    label: string;
+                    price: number;
+                    id?: string | null;
+                  }[]
+                | null;
+              /**
+               * Extras for this item only.
+               */
+              addOns?:
+                | {
+                    label: string;
+                    price: number;
+                    id?: string | null;
+                  }[]
+                | null;
+              /**
+               * Unticked items are hidden on the site.
+               */
+              available?: boolean | null;
+              featured?: ('popular' | 'recommendation') | null;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media".
+ */
+export interface Media {
+  id: number;
+  /**
+   * Describe the image for screen readers and search engines.
+   */
+  alt: string;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
+}
+/**
+ * Special events and holiday menus shown on /specials. Untick "Active" to hide one.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "specials".
+ */
+export interface Special {
+  id: number;
+  title: string;
+  /**
+   * Optional. Specials are listed by date.
+   */
+  date?: string | null;
+  description?: string | null;
+  image?: (number | null) | Media;
+  /**
+   * Optional link button, e.g. "Reserve a table" → /reservations
+   */
+  cta?: {
+    label?: string | null;
+    url?: string | null;
+  };
+  /**
+   * Only active specials appear on the site.
+   */
+  active?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users".
  */
@@ -149,25 +296,6 @@ export interface User {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media".
- */
-export interface Media {
-  id: number;
-  alt: string;
-  updatedAt: string;
-  createdAt: string;
-  url?: string | null;
-  thumbnailURL?: string | null;
-  filename?: string | null;
-  mimeType?: string | null;
-  filesize?: number | null;
-  width?: number | null;
-  height?: number | null;
-  focalX?: number | null;
-  focalY?: number | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -191,12 +319,20 @@ export interface PayloadLockedDocument {
   id: number;
   document?:
     | ({
-        relationTo: 'users';
-        value: number | User;
+        relationTo: 'menus';
+        value: number | Menu;
+      } | null)
+    | ({
+        relationTo: 'specials';
+        value: number | Special;
       } | null)
     | ({
         relationTo: 'media';
         value: number | Media;
+      } | null)
+    | ({
+        relationTo: 'users';
+        value: number | User;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -242,6 +378,97 @@ export interface PayloadMigration {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "menus_select".
+ */
+export interface MenusSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  intro?: T;
+  pdf?: T;
+  pdfLabel?: T;
+  sections?:
+    | T
+    | {
+        title?: T;
+        isSubgroup?: T;
+        description?: T;
+        note?: T;
+        addOns?:
+          | T
+          | {
+              label?: T;
+              price?: T;
+              id?: T;
+            };
+        items?:
+          | T
+          | {
+              name?: T;
+              description?: T;
+              price?: T;
+              priceLabel?: T;
+              variants?:
+                | T
+                | {
+                    label?: T;
+                    price?: T;
+                    id?: T;
+                  };
+              addOns?:
+                | T
+                | {
+                    label?: T;
+                    price?: T;
+                    id?: T;
+                  };
+              available?: T;
+              featured?: T;
+              id?: T;
+            };
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "specials_select".
+ */
+export interface SpecialsSelect<T extends boolean = true> {
+  title?: T;
+  date?: T;
+  description?: T;
+  image?: T;
+  cta?:
+    | T
+    | {
+        label?: T;
+        url?: T;
+      };
+  active?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media_select".
+ */
+export interface MediaSelect<T extends boolean = true> {
+  alt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
@@ -262,24 +489,6 @@ export interface UsersSelect<T extends boolean = true> {
         createdAt?: T;
         expiresAt?: T;
       };
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media_select".
- */
-export interface MediaSelect<T extends boolean = true> {
-  alt?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  url?: T;
-  thumbnailURL?: T;
-  filename?: T;
-  mimeType?: T;
-  filesize?: T;
-  width?: T;
-  height?: T;
-  focalX?: T;
-  focalY?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -320,6 +529,24 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   batch?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * Photos on /gallery. Drag to reorder. Each image uses its Media "alt" text.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "gallery".
+ */
+export interface Gallery {
+  id: number;
+  images?:
+    | {
+        image: number | Media;
+        showOnEventsPage?: boolean | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -368,6 +595,22 @@ export interface SiteSetting {
   };
   updatedAt?: string | null;
   createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "gallery_select".
+ */
+export interface GallerySelect<T extends boolean = true> {
+  images?:
+    | T
+    | {
+        image?: T;
+        showOnEventsPage?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
