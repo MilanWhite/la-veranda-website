@@ -4,6 +4,7 @@ import { RowLabel as RowLabel_a22f15833f5c099d83eec5874403c04c } from '../../../
 import { RequestHeader as RequestHeader_f9b296867dd30e721a1a6d7a1616af7e } from '../../../components/admin/RequestHeader'
 import { RequestMenuItems as RequestMenuItems_a03ef6850e8d5cef7945f8c8c4d44a30 } from '../../../components/admin/RequestMenuItems'
 import { MessagesInbox as MessagesInbox_757b9fab8ac7c6e8b9ea0c3b55bb6d70 } from '../../../components/admin/MessagesInbox'
+import { OpenTabFromHash as OpenTabFromHash_240b3f4d1fba8521b957f597a8ad6750 } from '../../../components/admin/OpenTabFromHash'
 import { Icon as Icon_91a09b539d3c86b0aebf520e7564ce08 } from '../../../components/admin/Logo'
 import { Logo as Logo_91a09b539d3c86b0aebf520e7564ce08 } from '../../../components/admin/Logo'
 import { NavBrand as NavBrand_d7dd6c791c113ce8ff240c7282294e70 } from '../../../components/admin/NavBrand'
@@ -18,6 +19,7 @@ export const importMap = {
   "/components/admin/RequestHeader#RequestHeader": RequestHeader_f9b296867dd30e721a1a6d7a1616af7e,
   "/components/admin/RequestMenuItems#RequestMenuItems": RequestMenuItems_a03ef6850e8d5cef7945f8c8c4d44a30,
   "/components/admin/MessagesInbox#MessagesInbox": MessagesInbox_757b9fab8ac7c6e8b9ea0c3b55bb6d70,
+  "/components/admin/OpenTabFromHash#OpenTabFromHash": OpenTabFromHash_240b3f4d1fba8521b957f597a8ad6750,
   "/components/admin/Logo#Icon": Icon_91a09b539d3c86b0aebf520e7564ce08,
   "/components/admin/Logo#Logo": Logo_91a09b539d3c86b0aebf520e7564ce08,
   "/components/admin/NavBrand#NavBrand": NavBrand_d7dd6c791c113ce8ff240c7282294e70,
