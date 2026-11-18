@@ -796,3 +796,145 @@ label {
     font-size: 20px;
   }
 }
+
+/* Events */
+
+/* Two rows of five on desktop (filled column by column, like the old site) */
+.check-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, max-content));
+  justify-content: center;
+  gap: 14px 30px;
+  margin: 0 auto 10px;
+  padding: 0;
+  list-style: none;
+  text-align: left;
+}
+
+@media (min-width: 700px) {
+  .check-list {
+    grid-template-columns: repeat(3, max-content);
+    gap: 14px 50px;
+  }
+}
+
+@media (min-width: 1025px) {
+  .check-list {
+    grid-template-rows: repeat(2, auto);
+    grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: max-content;
+    justify-content: space-between;
+    max-width: 1060px;
+  }
+}
+
+.check-list svg {
+  margin-right: 8px;
+  color: var(--accent);
+  vertical-align: -2px;
+}
+
+.photo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 12px;
+  margin: 0 0 40px;
+  padding: 0;
+  list-style: none;
+}
+
+.photo-grid img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+}
+
+/* Specials */
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+  gap: 30px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  background: var(--black-alt);
+}
+
+.card-image {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+}
+
+.card-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 24px;
+}
+
+.card-body p {
+  margin: 0 0 1em;
+}
+
+.card-body .button {
+  margin-top: auto;
+}
+
+.card-meta {
+  color: var(--accent);
+  font-size: 15px;
+}
+
+.card-meta svg {
+  vertical-align: -2px;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 640px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.empty-state .social-icons {
+  justify-content: center;
+  font-size: 22px;
+}
+
+.visit-social {
+  margin-bottom: 30px;
+  font-size: 22px;
+}
+
+/* Placeholder for forms that aren't built yet */
+
+.form-placeholder {
+  margin: 30px 0;
+  padding: clamp(24px, 4vw, 40px);
+  border: 1px dashed var(--accent);
+  background: var(--black);
+  text-align: center;
+}
+
+.form-placeholder .eyebrow {
+  margin: 0 0 8px;
+  font-size: 14px;
+}
+
+.form-placeholder .button-row-center {
+  margin-bottom: 0;
+}

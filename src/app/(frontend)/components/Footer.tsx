@@ -11,7 +11,7 @@ const quickLinks = [
   { label: 'Events', href: '/events' },
   { label: 'Reservation', href: '/reservations' },
   { label: 'Gallery', href: '/gallery' },
-  { label: 'Contract Form', href: '/book-an-event' },
+  { label: 'Contract Form', href: '/events#book-an-event' },
   { label: 'Contact', href: '/contact' },
 ]
 
