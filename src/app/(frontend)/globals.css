@@ -852,6 +852,200 @@ label {
   object-fit: cover;
 }
 
+/* Gallery: masonry collage, photos keep their own shape */
+
+/* Filter tabs: a teal line slides under the active tab */
+.gallery-tabs {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0 clamp(18px, 4vw, 44px);
+  width: max-content;
+  max-width: 100%;
+  margin: 0 auto clamp(30px, 5vw, 50px);
+  border-bottom: 1px solid var(--line);
+}
+
+.gallery-tabs button {
+  padding: 10px 2px 14px;
+  border: 0;
+  background: none;
+  color: var(--text);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  opacity: 0.65;
+  cursor: pointer;
+  transition:
+    color 0.2s,
+    opacity 0.2s;
+}
+
+.gallery-tabs button:hover,
+.gallery-tabs button:focus-visible {
+  opacity: 1;
+}
+
+.gallery-tabs button.active {
+  color: var(--accent);
+  opacity: 1;
+}
+
+.gallery-tabs button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.gallery-tabs-indicator {
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  height: 2px;
+  background: var(--accent);
+  transition:
+    transform 0.3s ease,
+    width 0.3s ease;
+}
+
+/* Columns stretch to the tallest one; the extra height is shared by that column's photos
+   (cropped slightly with object-fit), so the collage ends on a flat line. */
+.masonry {
+  display: flex;
+  align-items: stretch;
+  gap: clamp(10px, 1.6vw, 20px);
+}
+
+.masonry-column {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: clamp(10px, 1.6vw, 20px);
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.masonry-column li {
+  display: flex;
+  flex: 1 1 auto;
+}
+
+.gallery-thumb img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.gallery-thumb {
+  display: block;
+  flex: 1;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: zoom-in;
+  overflow: hidden;
+}
+
+.gallery-thumb img {
+  transition:
+    transform 0.3s,
+    filter 0.3s;
+}
+
+.gallery-thumb:hover img,
+.gallery-thumb:focus-visible img {
+  transform: scale(1.04);
+  filter: brightness(0.85);
+}
+
+.gallery-thumb:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.lightbox {
+  width: 100vw;
+  max-width: 100vw;
+  height: 100vh;
+  max-height: 100vh;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: rgba(0, 0, 0, 0.94);
+  color: var(--white);
+}
+
+.lightbox::backdrop {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+.lightbox figure {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  margin: 0;
+  padding: 50px 60px;
+}
+
+.lightbox figure img {
+  width: auto;
+  max-width: 100%;
+  max-height: calc(100vh - 140px);
+  object-fit: contain;
+}
+
+.lightbox figcaption {
+  margin-top: 12px;
+  font-size: 15px;
+  text-align: center;
+}
+
+.lightbox figcaption span {
+  opacity: 0.6;
+}
+
+.lightbox button {
+  position: absolute;
+  padding: 12px;
+  border: 0;
+  background: none;
+  color: var(--white);
+  font-size: 26px;
+  cursor: pointer;
+}
+
+.lightbox button:hover,
+.lightbox button:focus-visible {
+  color: var(--accent);
+}
+
+.lightbox-close {
+  top: 8px;
+  right: 8px;
+}
+
+.lightbox-prev,
+.lightbox-next {
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.lightbox-prev {
+  left: 4px;
+}
+
+.lightbox-next {
+  right: 4px;
+}
+
 /* Specials */
 
 .card-grid {
