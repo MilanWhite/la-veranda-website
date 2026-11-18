@@ -1246,3 +1246,139 @@ label {
 .status-page {
   min-height: 50vh;
 }
+
+/* Weddings & Corporate */
+
+.feature-row {
+  display: grid;
+  align-items: center;
+  gap: clamp(30px, 5vw, 70px);
+}
+
+@media (min-width: 900px) {
+  .feature-row {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .feature-row-reverse .feature-row-image {
+    order: 2;
+  }
+}
+
+.feature-row-image {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+}
+
+.feature-row-text .eyebrow svg {
+  margin-right: 6px;
+  vertical-align: -2px;
+}
+
+.feature-row-text p {
+  margin: 0 0 1.2em;
+}
+
+.check-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 0 0 28px;
+  padding: 0;
+  list-style: none;
+}
+
+.check-pills li {
+  padding: 6px 14px;
+  border: 1px solid var(--line);
+  font-size: 15px;
+}
+
+.highlight-grid,
+.steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+  gap: clamp(24px, 3vw, 40px);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  text-align: center;
+}
+
+.highlight-grid li,
+.steps li {
+  position: relative;
+  padding: 30px 22px;
+  border: 1px solid var(--line);
+}
+
+.highlight-grid h3,
+.steps h3 {
+  margin: 14px 0 10px;
+}
+
+.highlight-grid p,
+.steps p {
+  margin: 0;
+  font-size: 16px;
+  opacity: 0.85;
+}
+
+.highlight-icon {
+  color: var(--accent);
+  font-size: 30px;
+}
+
+.step-number {
+  position: absolute;
+  top: -16px;
+  left: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--black);
+  font-weight: 700;
+  transform: translateX(-50%);
+}
+
+.steps {
+  row-gap: clamp(36px, 4vw, 44px);
+}
+
+.course-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
+  gap: 24px;
+  margin: 30px 0;
+  padding: 0;
+  list-style: none;
+}
+
+.course-list li {
+  padding: 24px 18px;
+  border-top: 2px solid var(--accent);
+  background: var(--black);
+}
+
+.course-number {
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 2px;
+}
+
+.course-list h3 {
+  margin: 6px 0 8px;
+}
+
+.course-list p {
+  margin: 0;
+  font-size: 16px;
+  opacity: 0.85;
+}
