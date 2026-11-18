@@ -13,6 +13,21 @@ export const getMenu = cache(async (slug: Menu['slug']) => {
   return docs[0] ?? null
 })
 
+export const getActiveSpecials = cache(async () => {
+  const { docs } = await (
+    await payload()
+  ).find({ collection: 'specials', where: { active: { equals: true } }, sort: 'date', limit: 50 })
+  return docs
+})
+
+export const getGallery = cache(async () => {
+  const gallery = await (await payload()).findGlobal({ slug: 'gallery' })
+  return (gallery.images ?? []).flatMap((row) => {
+    const image = asMedia(row.image)
+    return image ? [{ image, showOnEventsPage: Boolean(row.showOnEventsPage) }] : []
+  })
+})
+
 // Upload fields are either an ID or the populated document, depending on query depth.
 export function asMedia(value: number | Media | null | undefined): Media | null {
   return value && typeof value === 'object' && value.url ? value : null
