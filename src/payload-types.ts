@@ -67,6 +67,7 @@ export interface Config {
   };
   blocks: {};
   collections: {
+    'contact-messages': ContactMessage;
     menus: Menu;
     specials: Special;
     media: Media;
@@ -78,6 +79,7 @@ export interface Config {
   };
   collectionsJoins: {};
   collectionsSelect: {
+    'contact-messages': ContactMessagesSelect<false> | ContactMessagesSelect<true>;
     menus: MenusSelect<false> | MenusSelect<true>;
     specials: SpecialsSelect<false> | SpecialsSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
@@ -126,6 +128,23 @@ export interface UserAuthOperations {
     email: string;
     password: string;
   };
+}
+/**
+ * Messages sent through the form on the Contact page. Tick "Handled" once replied.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "contact-messages".
+ */
+export interface ContactMessage {
+  id: number;
+  firstName: string;
+  lastName?: string | null;
+  email: string;
+  phone?: string | null;
+  message: string;
+  handled?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * The dinner and brunch menus shown on /menu and /brunch-menu.
@@ -319,6 +338,10 @@ export interface PayloadLockedDocument {
   id: number;
   document?:
     | ({
+        relationTo: 'contact-messages';
+        value: number | ContactMessage;
+      } | null)
+    | ({
         relationTo: 'menus';
         value: number | Menu;
       } | null)
@@ -375,6 +398,20 @@ export interface PayloadMigration {
   batch?: number | null;
   updatedAt: string;
   createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "contact-messages_select".
+ */
+export interface ContactMessagesSelect<T extends boolean = true> {
+  firstName?: T;
+  lastName?: T;
+  email?: T;
+  phone?: T;
+  message?: T;
+  handled?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
