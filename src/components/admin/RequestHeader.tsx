@@ -4,12 +4,13 @@ import { useDocumentInfo, useFormFields } from '@payloadcms/ui'
 import { useState } from 'react'
 
 import { formatDate } from '@/lib/eventRequests/summary'
+import { ReplyMenu } from './ReplyMenu'
 import { ACTIONS, requestAction, type Status } from './RequestActions'
 import { StatusBadge } from './StatusBadge'
 
 // The top bar of an event request (sits where Payload's Save button is): request number,
-// customer and date with the status on the left; Approve / Decline / Cancel and the PDF on
-// the right, next to Save and ⋯ (which holds the rarer actions).
+// customer and date with the status on the left; Approve / Decline / Cancel, the PDF and the
+// Reply menu (templates) on the right, next to Save and ⋯ (which holds the rarer actions).
 export function RequestHeader() {
   const { id } = useDocumentInfo()
   const value = useFormFields(([fields]) => ({
@@ -68,6 +69,7 @@ export function RequestHeader() {
         >
           View PDF
         </a>
+        <ReplyMenu />
       </div>
     </div>
   )
