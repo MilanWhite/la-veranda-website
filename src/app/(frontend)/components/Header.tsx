@@ -90,7 +90,7 @@ export async function Header() {
               ),
             )}
           </ul>
-          <Link href="/book-an-event" className="button">
+          <Link href="/events#book-an-event" className="button">
             Book an Event
           </Link>
         </nav>
