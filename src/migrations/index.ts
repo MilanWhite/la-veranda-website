@@ -7,6 +7,7 @@ import * as migration_20261021_224248_gallery_category from './20261021_224248_g
 import * as migration_20261023_220023_contact_messages from './20261023_220023_contact_messages';
 import * as migration_20261107_164650_specials_repeat from './20261107_164650_specials_repeat';
 import * as migration_20261115_195355_event_requests from './20261115_195355_event_requests';
+import * as migration_20261118_022849_contact_message_replies from './20261118_022849_contact_message_replies';
 
 export const migrations = [
   {
@@ -52,6 +53,11 @@ export const migrations = [
   {
     up: migration_20261115_195355_event_requests.up,
     down: migration_20261115_195355_event_requests.down,
-    name: '20261115_195355_event_requests'
+    name: '20261115_195355_event_requests',
+  },
+  {
+    up: migration_20261118_022849_contact_message_replies.up,
+    down: migration_20261118_022849_contact_message_replies.down,
+    name: '20261118_022849_contact_message_replies'
   },
 ];
