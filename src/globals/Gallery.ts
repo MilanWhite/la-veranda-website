@@ -26,6 +26,18 @@ export const Gallery: GlobalConfig = {
           fields: [
             { name: 'image', type: 'upload', relationTo: 'media', required: true },
             {
+              name: 'category',
+              type: 'select',
+              required: true,
+              defaultValue: 'restaurant',
+              options: [
+                { label: 'Food', value: 'food' },
+                { label: 'Events', value: 'events' },
+                { label: 'Restaurant', value: 'restaurant' },
+              ],
+              admin: { description: 'Used by the filter tabs on /gallery.' },
+            },
+            {
               name: 'showOnEventsPage',
               label: 'Also show on Events page',
               type: 'checkbox',
