@@ -938,3 +938,9 @@ label {
 .form-placeholder .button-row-center {
   margin-bottom: 0;
 }
+
+/* 404 / error */
+
+.status-page {
+  min-height: 50vh;
+}
