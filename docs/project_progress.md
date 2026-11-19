@@ -474,6 +474,9 @@ Related docs:
 | 2026-11-17 | 7 | Weddings & Corporate content (services, capacity, photos) | Owner | No |
 | 2026-11-17 | 7 | Privacy policy wanted? (none on old site) | Owner | No |
 | 2026-11-17 | 7 | Current specials to publish | Owner | No |
+| 2026-11-18 | 6 | Confirm the two unclear prices on the photographed brunch menu (Double B "add jar of jam +1"?, Steak & Eggs 35?) | Owner | No |
+| 2026-11-18 | 7 | Salsa Night start time and description (site shows the day only for now) | Owner | No |
+| 2026-11-18 | 6 | Dinner menu PDF (button shows "Coming soon" until uploaded) | Owner | No |
 
 ---
 
@@ -492,6 +495,9 @@ Related docs:
 | 2026-11-17 | Contact messages are stored in the DB (`contact-messages`) before email exists | Form works now; email notification added in Stage 10 |
 | 2026-11-17 | Weddings page shows no prices; links the Group Menu PDF instead          | One source of truth; prices still unconfirmed |
 | 2026-11-17 | Event request form lives on `/events` (`#book-an-event`); `/book-an-event` 308-redirects there | User: booking belongs on the Events page, as on the old site |
+| 2026-11-18 | Event contract form is a light "paper" card on the dark page | Long form is easier to read and fill in dark-on-light; matches the printed menus |
+| 2026-11-18 | Page-end CTAs: one shared look (fixed darkened photo, solid main button + outline alternative) | User asked for consistent CTA sections |
+| 2026-11-18 | Specials can repeat weekly or monthly (e.g. last Friday); past one-time specials hide themselves | Salsa Night runs the last Friday of every month |
 
 ---
 
@@ -501,6 +507,9 @@ Newest entries first.
 
 | Date       | Stage | Summary of work                          | By    |
 | ---------- | ----- | ---------------------------------------- | ----- |
+| 2026-11-19 | 8–14 | Admin redesign (bookings-first dashboard with the requests list + full-height Coming up panel, request page top bar with actions next to Save, booking-summary Overview, contact messages inbox, light mode, sidebar logo); request sorting pending-first; calendar fixed (GOOGLE_CALENDAR_ID → booking@); restaurant email made safe to reply to (no admin link); Google hours work with just an API key (`npm run check:google-hours`); old-site redirects. Full test run: 41 validator cases, real form/contact submits, honeypot, spam limits, every status change, edits, notes, resend, PDF, delete, 18 signed-out API checks, all pages at 390/1366px, links, fresh-database migrations, production build. Fixed: Feb 30 accepted, line breaks in one-line fields, spam limit counting failed tries, bad-status crash, repeat approvals, false 'Menu selections updated' history, orphaned calendar events on delete. | Agent |
+| 2026-11-18 | 6, 7 | Feedback round 3: dinner + brunch menus replaced from the restaurant's printed menus (47 + 52 items, seed + dev DB); "Download Dinner Menu" placeholder button; gallery full width, always 3 columns (uneven ends instead of heavy crops), slow 1s zoom without dimming; homepage photo as a fixed "window"; nav dropdown closes after choosing a page; Events and Weddings photos as a carousel (4/3/2 across, autoplay, arrows, dots); event form on a light paper card; repeating specials (weekly / monthly e.g. last Friday, + migration) with Salsa Night seeded; consistent CTA sections; footer menu links fixed for the new sections. Verified tsc, lint, prettier, build, desktop + 390px, repeat rules. | Agent |
+| 2026-11-17 | 8–12 | Event request workflow (branch `event-request-workflow`): Event Menu & Form global (seeded from old form), Event Requests collection (#4834+, Pending/Approved/Declined/Cancelled rules, plain-language History, internal notes), form on `/events` (server validation, price snapshot, honeypot, rate limit, Turnstile), booking-summary PDF, customer + restaurant emails via Gmail SMTP (Reply-To customer), contact form emails, Google Calendar sync (approve/edit/cancel, idempotent event id), switchable Google hours, La Veranda admin (dashboard, request overview with Approve/Decline/Cancel, logo). Verified: submit → saved → both emails sent; PDF; status rules; History; 401 when signed out. Calendar success path waits on enabling the Calendar API. | Agent |
 | 2026-11-17 | 6, 7  | Feedback round 2: darker photo CTAs; menus in two balanced columns (sections kept whole, best split chosen); gallery filter tabs (View All/Food/Events/Restaurant, sliding teal underline) + flat-bottom masonry + photo CTA; gallery `category` field (+ data migration); Contact: new dining-room banner, working "Let's Talk" form → `contact-messages`, full-width map; new `/weddings-corporate` page; weddings teaser on `/events`. Verified build, desktop + 375px, form validation/save/API lockdown. | Agent |
 | 2026-11-17 | 6, 7  | Design feedback round: per-page banners from the old site; statement-photo CTAs; two-column menus (sections paired like the old site); Events page full-width intro, event types in 2 rows × 5, Group/Brunch menu downloads, event request placeholder moved onto `/events#book-an-event` (`/book-an-event` now redirects); masonry gallery; Contact page uses shared `VisitUs`; plain social icons in footer. Added Site Settings → Event group menu (PDF) + migration. Verified build, desktop + 375px. | Agent |
 | 2026-11-17 | 1, 6, 7 | Inventoried old site; added Menus/Specials/Gallery (+ migration), seed, `db:reset`, `db:test:setup` (`laveranda_test`); built `/menu`, `/brunch-menu`, `/events`, `/specials`, `/gallery`, `/contact`, `/reservations`, `/book-an-event` (form placeholder), branded 404/error; homepage dishes from DB; `.gitignore` excludes `tmp/`, `docs.zip`. Verified tsc/lint/prettier/build, all pages desktop + 375px, lightbox keyboard. | Agent |

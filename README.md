@@ -102,3 +102,16 @@ Public pages are prerendered. Editing content in the admin clears the cached pag
 running site (e.g. `npm run seed`) show up after the next restart or rebuild.
 
 Project progress is tracked in [docs/project_progress.md](docs/project_progress.md).
+
+## Event requests, email and Google Calendar
+
+- Customers send event requests from the form on `/events`. Each request is saved as
+  **Pending** first, then the customer gets a confirmation email with the booking summary PDF
+  and the restaurant gets a notification (Reply-To = the customer).
+- Staff manage requests in **Admin → Events → Event Requests**: the **Overview** tab has
+  Approve / Decline / Cancel, the PDF, and email/calendar status; **History** lists every change.
+- Approving adds the event to Google Calendar, edits update it, cancelling removes it.
+- Prices, menu choices and form rules live in **Admin → Events → Event Menu & Form**.
+- Settings (see `.env.example`): `SMTP_*` for email, `GOOGLE_*` for the calendar,
+  `TURNSTILE_*` for spam protection. Anything not configured is skipped and recorded on the
+  request instead of failing.
