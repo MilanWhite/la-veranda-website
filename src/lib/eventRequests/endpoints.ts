@@ -1,7 +1,7 @@
 import type { Endpoint, PayloadRequest } from 'payload'
 
 import type { EventRequest } from '../../payload-types'
-import { sendRequestEmails } from './emails'
+import { sendCustomerReply, sendRequestEmails } from './emails'
 import { pdfFilename, renderBookingPdf } from './pdf'
 
 // Admin-only actions used by the buttons on a request's Overview tab.
@@ -77,6 +77,32 @@ export const eventRequestEndpoints: Endpoint[] = [
       if (error) return error
       const result = await sendRequestEmails(req.payload, doc!)
       return json({ ok: true, ...result })
+    },
+  },
+  {
+    // Reply to the customer from the admin, in the same email conversation as their
+    // confirmation (see sendCustomerReply)
+    path: '/:id/reply',
+    method: 'post',
+    handler: async (req) => {
+      const { doc, error } = await load(req)
+      if (error) return error
+      const body = (req.json ? await req.json() : {}) as { message?: string; attachPdf?: boolean }
+      const message = String(body.message ?? '')
+        .replace(/\r\n?/g, '\n')
+        .trim()
+      if (!message) return json({ error: 'Please write a message.' }, 400)
+      if (message.length > 10_000) return json({ error: 'The message is too long.' }, 400)
+      try {
+        await sendCustomerReply(req.payload, doc!, {
+          message,
+          attachPdf: Boolean(body.attachPdf),
+          sentBy: req.user?.email,
+        })
+        return json({ ok: true })
+      } catch (e) {
+        return json({ error: message_(e) }, 500)
+      }
     },
   },
   {

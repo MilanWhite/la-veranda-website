@@ -8,6 +8,7 @@ import * as migration_20261118_024631_contact_messages from './20261118_024631_c
 import * as migration_20261119_051436_specials_repeat from './20261119_051436_specials_repeat';
 import * as migration_20261119_051945_event_requests from './20261119_051945_event_requests';
 import * as migration_20261119_052352_contact_message_replies from './20261119_052352_contact_message_replies';
+import * as migration_20261119_052444_event_reply_templates from './20261119_052444_event_reply_templates';
 
 export const migrations = [
   {
@@ -58,6 +59,11 @@ export const migrations = [
   {
     up: migration_20261119_052352_contact_message_replies.up,
     down: migration_20261119_052352_contact_message_replies.down,
-    name: '20261119_052352_contact_message_replies'
+    name: '20261119_052352_contact_message_replies',
+  },
+  {
+    up: migration_20261119_052444_event_reply_templates.up,
+    down: migration_20261119_052444_event_reply_templates.down,
+    name: '20261119_052444_event_reply_templates'
   },
 ];
