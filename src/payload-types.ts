@@ -239,6 +239,7 @@ export interface EventRequest {
     owner?: ('not_sent' | 'sent' | 'failed' | 'skipped') | null;
     sentAt?: string | null;
     error?: string | null;
+    confirmationMessageId?: string | null;
   };
   calendar?: {
     status?: ('not_synced' | 'synced' | 'removed' | 'failed' | 'skipped') | null;
@@ -647,6 +648,7 @@ export interface EventRequestsSelect<T extends boolean = true> {
         owner?: T;
         sentAt?: T;
         error?: T;
+        confirmationMessageId?: T;
       };
   calendar?:
     | T
@@ -947,6 +949,13 @@ export interface EventMenu {
         id?: string | null;
       }[]
     | null;
+  replyTemplates?:
+    | {
+        name: string;
+        body: string;
+        id?: string | null;
+      }[]
+    | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -1105,6 +1114,13 @@ export interface EventMenuSelect<T extends boolean = true> {
               label?: T;
               id?: T;
             };
+        id?: T;
+      };
+  replyTemplates?:
+    | T
+    | {
+        name?: T;
+        body?: T;
         id?: T;
       };
   updatedAt?: T;

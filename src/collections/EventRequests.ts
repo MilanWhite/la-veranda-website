@@ -418,6 +418,12 @@ export const EventRequests: CollectionConfig = {
                   ],
                 },
                 { name: 'error', type: 'text' },
+                {
+                  // Replies from the admin point to this, so the customer sees one conversation
+                  name: 'confirmationMessageId',
+                  label: 'Confirmation email ID',
+                  type: 'text',
+                },
               ],
             },
             {
