@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 
 import type { SiteSetting } from '@/payload-types'
+import { EmailButton } from './EmailButton'
 
 // Stand-in for a form that isn't built yet (it needs email sending + spam protection first).
 // Offers email/phone instead so visitors are never stuck.
@@ -21,11 +22,7 @@ export function FormPlaceholder({
       <h3>{title}</h3>
       {children}
       <div className="button-row button-row-center">
-        {settings.email && (
-          <a href={`mailto:${settings.email}`} className="button-solid">
-            Email Us
-          </a>
-        )}
+        {settings.email && <EmailButton email={settings.email} className="button-solid" />}
         {settings.phone && (
           <a href={`tel:${settings.phone.replace(/[^\d+]/g, '')}`} className="button">
             Call {settings.phone}
