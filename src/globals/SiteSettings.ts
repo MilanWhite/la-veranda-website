@@ -66,6 +66,16 @@ export const SiteSettings: GlobalConfig = {
           fields: [{ name: 'email', type: 'email', required: true }],
         },
         { name: 'googleCalendarId', type: 'text' },
+        {
+          name: 'replyFromEmail',
+          label: 'Customer replies go to',
+          type: 'email',
+          defaultValue: 'booking@laverandaresto.com',
+          admin: {
+            description:
+              'When customers answer a confirmation or a reply sent from the admin, their email goes to this address (it should be the mailbox the website sends from).',
+          },
+        },
       ],
     },
   ],
