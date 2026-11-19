@@ -1,11 +1,14 @@
+import { googleOpeningHours } from '@/lib/googleHours'
 import type { SiteSetting } from '@/payload-types'
 
-// Opening hours from Site Settings as name — line — value rows.
-export function HoursList({ hours }: { hours: SiteSetting['hours'] }) {
-  if (!hours?.length) return null
+// Opening hours as name — line — value rows. Uses Google's hours when that integration is
+// set up, otherwise the hours from Site Settings.
+export async function HoursList({ hours }: { hours: SiteSetting['hours'] }) {
+  const list = (await googleOpeningHours()) ?? hours
+  if (!list?.length) return null
   return (
     <ul className="hours-list">
-      {hours.map((h) => (
+      {list.map((h) => (
         <li key={h.id}>
           <div className="leader-row">
             <h3>{h.days}</h3>
