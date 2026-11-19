@@ -1,6 +1,6 @@
 'use client'
 
-import { useActionState, useEffect, useMemo, useRef, useState } from 'react'
+import { startTransition, useActionState, useEffect, useMemo, useRef, useState } from 'react'
 
 import { pricingNotes } from '@/lib/eventRequests/summary'
 import type { EventMenu } from '@/payload-types'
@@ -133,7 +133,19 @@ export function EventRequestForm({ menu, startTimes }: { menu: EventMenu; startT
   })
 
   return (
-    <form ref={formRef} action={formAction} className="event-form paper" noValidate>
+    <form
+      ref={formRef}
+      action={formAction}
+      // Submit without React's automatic form reset, which would clear the menu choices,
+      // event type and deposit box after a failed submit (they aren't kept in state).
+      onSubmit={(e) => {
+        e.preventDefault()
+        const form = new FormData(e.currentTarget)
+        startTransition(() => formAction(form))
+      }}
+      className="event-form paper"
+      noValidate
+    >
       {/* Contact */}
       <fieldset className="form-section">
         <legend>Your Details</legend>
