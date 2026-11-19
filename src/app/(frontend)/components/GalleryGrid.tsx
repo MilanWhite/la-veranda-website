@@ -99,19 +99,8 @@ function toColumns(images: GalleryImage[], count: number) {
   return {
     columns: cols.map((c) => c.map((index) => ({ img: images[index], index }))),
     // how much the shortest column must stretch to reach the tallest (0 = already flat)
-    stretch: Math.min(...heights) > 0 ? spread() / Math.min(...heights) : 0,
+    stretch: Math.min(...heights) > 0 ? spread() / Math.min(...heights) : Infinity,
   }
-}
-
-// Uses the most columns that still end nearly flat; falls back to fewer columns when the
-// photos' shapes can't be balanced (e.g. one category with a few tall photos).
-function bestLayout(images: GalleryImage[], maxColumns: number) {
-  let best = toColumns(images, maxColumns)
-  for (let count = maxColumns - 1; count >= 2 && best.stretch > 0.12; count--) {
-    const layout = toColumns(images, count)
-    if (layout.stretch < best.stretch - 0.05) best = layout
-  }
-  return best.columns
 }
 
 // Filter tabs + photo collage; clicking a photo opens it full screen.
@@ -175,9 +164,14 @@ export function GalleryGrid({ images: allImages }: { images: GalleryImage[] }) {
     tabRefs.current[next.value]?.focus()
   }
 
-  // Few photos (e.g. one category) → fewer columns, so nothing gets stretched too much.
-  const columnCount = Math.min(useColumnCount(), Math.max(1, Math.ceil(images.length / 2)))
+  // Always 3 columns like the old site (2 on phones); only a category with fewer photos
+  // than that uses fewer.
+  const columnCount = Math.min(useColumnCount(), Math.max(1, images.length))
   const current = open === null ? null : images[open]
+  // End on a flat line only when that crops photos a little; otherwise (e.g. a category with
+  // a few tall photos) the columns simply end at different heights, like the old site.
+  const layout = toColumns(images, columnCount)
+  const flat = layout.stretch <= 0.15
 
   return (
     <>
@@ -214,9 +208,9 @@ export function GalleryGrid({ images: allImages }: { images: GalleryImage[] }) {
         id="gallery-panel"
         role="tabpanel"
         aria-labelledby={`gallery-tab-${filter}`}
-        className="masonry"
+        className={flat ? 'masonry' : 'masonry masonry-ragged'}
       >
-        {bestLayout(images, columnCount).map((column, c) => (
+        {layout.columns.map((column, c) => (
           <ul key={`${filter}-${c}`} className="masonry-column">
             {column.map(({ img, index }) => (
               <li key={img.url}>
@@ -234,7 +228,7 @@ export function GalleryGrid({ images: allImages }: { images: GalleryImage[] }) {
                     alt={img.alt}
                     width={img.width}
                     height={img.height}
-                    sizes="(max-width: 699px) 50vw, (max-width: 1240px) 33vw, 380px"
+                    sizes="(max-width: 699px) 50vw, 33vw"
                   />
                 </button>
               </li>

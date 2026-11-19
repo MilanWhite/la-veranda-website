@@ -1,4 +1,4 @@
-import Image from 'next/image'
+import Image, { getImageProps } from 'next/image'
 import Link from 'next/link'
 
 import eventCenter from '@/assets/event-center.webp'
@@ -98,9 +98,14 @@ export default async function HomePage() {
         </section>
       )}
 
-      <section className="statement">
-        <Image src={statement} alt="" fill sizes="100vw" className="cover" />
-      </section>
+      {/* "Window" effect like the old site: the photo stays still while the page scrolls past */}
+      <section
+        className="statement"
+        aria-hidden
+        style={{
+          backgroundImage: `url(${getImageProps({ src: statement, alt: '', width: 1920 }).props.src})`,
+        }}
+      />
 
       <VisitUs settings={settings} />
     </>

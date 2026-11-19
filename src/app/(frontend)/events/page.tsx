@@ -8,6 +8,7 @@ import weddingsBanner from '@/assets/weddings-banner.webp'
 import { CtaSection } from '../components/CtaSection'
 import { FormPlaceholder } from '../components/FormPlaceholder'
 import { PageBanner } from '../components/PageBanner'
+import { PhotoCarousel } from '../components/PhotoCarousel'
 import { getSiteSettings } from '../getSiteSettings'
 import { asMedia, getGallery, getMenu } from '../lib/content'
 
@@ -147,19 +148,10 @@ export default async function EventsPage() {
           <div className="container">
             <h2 className="section-title">Our Events</h2>
             <hr className="divider" />
-            <ul className="photo-grid">
-              {photos.map((photo) => (
-                <li key={photo.id}>
-                  <Image
-                    src={photo.url!}
-                    alt={photo.alt}
-                    width={photo.width ?? 1200}
-                    height={photo.height ?? 800}
-                    sizes="(max-width: 600px) 100vw, (max-width: 1024px) 50vw, 400px"
-                  />
-                </li>
-              ))}
-            </ul>
+            <PhotoCarousel
+              label="Photos from our events"
+              photos={photos.flatMap((p) => (p.url ? [{ id: p.id, url: p.url, alt: p.alt }] : []))}
+            />
             <p className="center">
               <Link href="/gallery" className="button">
                 View Gallery
