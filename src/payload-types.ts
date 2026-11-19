@@ -250,8 +250,6 @@ export interface EventRequest {
   createdAt: string;
 }
 /**
- * Messages sent through the form on the Contact page. Tick "Handled" once replied.
- *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "contact-messages".
  */
@@ -263,6 +261,15 @@ export interface ContactMessage {
   phone?: string | null;
   message: string;
   handled?: boolean | null;
+  replies?:
+    | {
+        message?: string | null;
+        sentBy?: string | null;
+        sentAt?: string | null;
+        messageId?: string | null;
+        id?: string | null;
+      }[]
+    | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -663,6 +670,15 @@ export interface ContactMessagesSelect<T extends boolean = true> {
   phone?: T;
   message?: T;
   handled?: T;
+  replies?:
+    | T
+    | {
+        message?: T;
+        sentBy?: T;
+        sentAt?: T;
+        messageId?: T;
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1004,6 +1020,10 @@ export interface SiteSetting {
         }[]
       | null;
     googleCalendarId?: string | null;
+    /**
+     * When customers answer a confirmation or a reply sent from the admin, their email goes to this address (it should be the mailbox the website sends from).
+     */
+    replyFromEmail?: string | null;
   };
   updatedAt?: string | null;
   createdAt?: string | null;
@@ -1150,6 +1170,7 @@ export interface SiteSettingsSelect<T extends boolean = true> {
               id?: T;
             };
         googleCalendarId?: T;
+        replyFromEmail?: T;
       };
   updatedAt?: T;
   createdAt?: T;
