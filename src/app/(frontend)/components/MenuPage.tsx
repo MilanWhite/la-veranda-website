@@ -5,7 +5,7 @@ import menuBanner from '@/assets/menu-banner.webp'
 import type { Menu } from '@/payload-types'
 import { asMedia, getMenu } from '../lib/content'
 import { CtaSection } from './CtaSection'
-import { MenuSections, sectionId } from './MenuSections'
+import { MenuSections } from './MenuSections'
 import { PageBanner } from './PageBanner'
 
 // Shared layout for /menu and /brunch-menu. Content comes from the "Menus" collection.
@@ -20,9 +20,6 @@ export async function MenuPage({
   if (!menu) notFound()
 
   const pdf = asMedia(menu.pdf)
-  const topSections = menu.sections?.filter(
-    (s) => !s.isSubgroup && s.items?.some((i) => i.available !== false),
-  )
 
   return (
     <>
@@ -34,25 +31,22 @@ export async function MenuPage({
           {menu.intro && <p className="lead center">{menu.intro}</p>}
 
           <div className="button-row button-row-center">
-            {pdf?.url && (
+            {pdf?.url ? (
               <a href={pdf.url} className="button" target="_blank" rel="noopener noreferrer">
                 {menu.pdfLabel || 'Download Menu'}
               </a>
+            ) : (
+              // No PDF uploaded yet: keep the button in place so the layout is final, but
+              // say so instead of linking nowhere. Uploading a PDF in the admin turns it on.
+              <span className="button is-disabled" aria-disabled="true" title="PDF coming soon">
+                {menu.pdfLabel || 'Download Menu'}
+                <small>Coming soon</small>
+              </span>
             )}
             <Link href={otherMenu.href} className="button">
               {otherMenu.label}
             </Link>
           </div>
-
-          {topSections && topSections.length > 1 && (
-            <nav className="menu-nav" aria-label="Menu sections">
-              {topSections.map((s) => (
-                <a key={s.id} href={`#${sectionId(s)}`}>
-                  {s.title}
-                </a>
-              ))}
-            </nav>
-          )}
 
           <hr className="divider" />
           <MenuSections sections={menu.sections} columns />
