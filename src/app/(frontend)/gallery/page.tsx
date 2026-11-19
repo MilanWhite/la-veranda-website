@@ -24,7 +24,8 @@ export default async function GalleryPage() {
     <>
       <PageBanner title="Gallery" image={galleryBanner} />
       <section className="section">
-        <div className="container">
+        {/* Full width like the old gallery, with the header's side margins */}
+        <div className="container-wide">
           {images.length > 0 ? (
             <GalleryGrid images={images} />
           ) : (
