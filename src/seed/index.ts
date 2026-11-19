@@ -12,6 +12,7 @@ import { getPayload, type Payload } from 'payload'
 import { fileURLToPath } from 'url'
 
 import config from '../payload.config'
+import { eventMenuSeed } from './eventMenu'
 import { brunchMenu, dinnerMenu } from './menus'
 
 const dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -229,6 +230,17 @@ async function seedSalsaNight(payload: Payload) {
   })
 }
 
+// Event request form: prices, rules and menu choices from the old Event Contract form.
+async function seedEventMenu(payload: Payload) {
+  const menu = await payload.findGlobal({ slug: 'event-menu', depth: 0 })
+  if (menu.adultPrice != null) {
+    log('event menu already filled in, skipping')
+    return
+  }
+  log('event menu')
+  await payload.updateGlobal({ slug: 'event-menu', data: eventMenuSeed })
+}
+
 
 async function seedAdmin(payload: Payload) {
   const email = process.env.SEED_ADMIN_EMAIL
@@ -247,6 +259,7 @@ await seedMenus(payload)
 await seedGallery(payload)
 await seedSpecials(payload)
 await seedSalsaNight(payload)
+await seedEventMenu(payload)
 await seedAdmin(payload)
 log('done')
 process.exit(0)

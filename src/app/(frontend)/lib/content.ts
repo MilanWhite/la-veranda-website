@@ -14,6 +14,10 @@ export const getMenu = cache(async (slug: Menu['slug']) => {
   return docs[0] ?? null
 })
 
+export const getEventMenu = cache(async () =>
+  (await payload()).findGlobal({ slug: 'event-menu', depth: 0 }),
+)
+
 // Active specials that are still to come, soonest first, each with the date it happens
 // next (`next`: a repeating special's next date, or a one-time special's own date). Past
 // one-time specials drop off by themselves; specials without a date are listed last.
