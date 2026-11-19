@@ -27,7 +27,7 @@ export const Menus: CollectionConfig = {
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'slug', 'updatedAt'],
-    group: 'Menus',
+    group: 'Website',
     description: 'The dinner and brunch menus shown on /menu and /brunch-menu.',
   },
   access: {
