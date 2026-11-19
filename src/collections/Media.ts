@@ -5,6 +5,7 @@ import { revalidateAfterChange, revalidateAfterDelete } from '../hooks/revalidat
 
 export const Media: CollectionConfig = {
   slug: 'media',
+  labels: { singular: 'Photo or File', plural: 'Photos & Files' },
   admin: { group: 'Website' },
   access: {
     read: () => true,
