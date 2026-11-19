@@ -4,7 +4,7 @@ import path from 'path'
 import type { Payload } from 'payload'
 
 import type { EventRequest } from '../../payload-types'
-import { escapeHtml, isEmailConfigured } from '../mail'
+import { escapeHtml, isEmailConfigured, messageIdDomain } from '../mail'
 import { renderBookingPdf, pdfFilename } from './pdf'
 import { formatDate, formatTime, requestNotes, summaryRows } from './summary'
 
@@ -19,9 +19,7 @@ export const conversationSubject = (r: EventRequest) =>
 // A new email ID for each confirmation sent (a resend must not reuse one: Gmail drops
 // emails whose ID it has already seen). Replies point to it.
 function newMessageId() {
-  const domain =
-    (process.env.EMAIL_FROM || process.env.SMTP_USER || '').split('@')[1] || 'localhost'
-  return `<event-request.${randomUUID()}@${domain}>`
+  return `<event-request.${randomUUID()}@${messageIdDomain()}>`
 }
 
 const logoAttachment = () => ({

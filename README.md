@@ -112,6 +112,11 @@ Project progress is tracked in [docs/project_progress.md](docs/project_progress.
   Approve / Decline / Cancel, the PDF, and email/calendar status; **History** lists every change.
 - Approving adds the event to Google Calendar, edits update it, cancelling removes it.
 - Prices, menu choices and form rules live in **Admin → Events → Event Menu & Form**.
-- Settings (see `.env.example`): `SMTP_*` for email, `GOOGLE_*` for the calendar,
-  `TURNSTILE_*` for spam protection. Anything not configured is skipped and recorded on the
-  request instead of failing.
+- Settings (see `.env.example`): `EMAIL_RELAY_*` (on Railway) or `SMTP_*` (locally) for email,
+  `GOOGLE_*` for the calendar, `TURNSTILE_*` for spam protection. Anything not configured is
+  skipped and recorded on the request instead of failing.
+- Railway blocks SMTP on its Hobby plan, so there the site sends email through the relay in
+  [`email-relay/`](email-relay/README.md): a free Cloudflare Worker that passes each email to
+  Gmail SMTP unchanged (attachments, logo, reply threading, booking@'s Sent folder).
+- Email check: `npm run check:email -- you@example.com` sends one test email and shows which
+  way it went out (relay or SMTP).

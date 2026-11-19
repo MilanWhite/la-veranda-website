@@ -57,3 +57,7 @@ next-env.d.ts
 /docs/meeting_agenda_elio.md
 /docs/chat_topics_summary.txt
 /docs/menu/BrunchMenuMay2025 (1).pdf
+
+# Cloudflare Worker local state
+/email-relay/.wrangler
+/email-relay/node_modules
