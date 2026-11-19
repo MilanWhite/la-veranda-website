@@ -67,6 +67,7 @@ export interface Config {
   };
   blocks: {};
   collections: {
+    'event-requests': EventRequest;
     'contact-messages': ContactMessage;
     menus: Menu;
     specials: Special;
@@ -79,6 +80,7 @@ export interface Config {
   };
   collectionsJoins: {};
   collectionsSelect: {
+    'event-requests': EventRequestsSelect<false> | EventRequestsSelect<true>;
     'contact-messages': ContactMessagesSelect<false> | ContactMessagesSelect<true>;
     menus: MenusSelect<false> | MenusSelect<true>;
     specials: SpecialsSelect<false> | SpecialsSelect<true>;
@@ -94,10 +96,12 @@ export interface Config {
   };
   fallbackLocale: null;
   globals: {
+    'event-menu': EventMenu;
     gallery: Gallery;
     'site-settings': SiteSetting;
   };
   globalsSelect: {
+    'event-menu': EventMenuSelect<false> | EventMenuSelect<true>;
     gallery: GallerySelect<false> | GallerySelect<true>;
     'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
   };
@@ -128,6 +132,122 @@ export interface UserAuthOperations {
     email: string;
     password: string;
   };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "event-requests".
+ */
+export interface EventRequest {
+  id: number;
+  requestNumber?: number | null;
+  status: 'pending' | 'approved' | 'declined' | 'cancelled';
+  title?: string | null;
+  statusOrder?: number | null;
+  customerName?: string | null;
+  startsOn?: string | null;
+  occasion?: string | null;
+  guests?: string | null;
+  internalNotes?:
+    | {
+        note: string;
+        author?: string | null;
+        addedAt?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  customer: {
+    nameOrCompany: string;
+    contactPerson?: string | null;
+    email: string;
+    phone: string;
+    address?: string | null;
+  };
+  event: {
+    type: string;
+    /**
+     * YYYY-MM-DD
+     */
+    date: string;
+    /**
+     * 24-hour, e.g. 12:00
+     */
+    startTime: string;
+    /**
+     * 24-hour, e.g. 16:00
+     */
+    endTime: string;
+    adults: number;
+    kids?: number | null;
+  };
+  selections?:
+    | {
+        title: string;
+        toBeDecided?: boolean | null;
+        items?:
+          | {
+              name: string;
+              upcharge?: number | null;
+              id?: string | null;
+            }[]
+          | null;
+        textLabel?: string | null;
+        text?: string | null;
+        textUpcharge?: number | null;
+        id?: string | null;
+      }[]
+    | null;
+  extras?:
+    | {
+        name: string;
+        price?: number | null;
+        unit?: ('event' | 'adult') | null;
+        id?: string | null;
+      }[]
+    | null;
+  details?:
+    | {
+        label: string;
+        value?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  depositAcknowledged?: boolean | null;
+  notes?: string | null;
+  activity?:
+    | {
+        at?: string | null;
+        by?: string | null;
+        message?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  pricing?: {
+    adultPrice?: number | null;
+    kidPrice?: number | null;
+    spaceFeePercent?: number | null;
+    includedHours?: number | null;
+    extraHourPrice?: number | null;
+    notes?:
+      | {
+          text?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  emails?: {
+    customer?: ('not_sent' | 'sent' | 'failed' | 'skipped') | null;
+    owner?: ('not_sent' | 'sent' | 'failed' | 'skipped') | null;
+    sentAt?: string | null;
+    error?: string | null;
+  };
+  calendar?: {
+    status?: ('not_synced' | 'synced' | 'removed' | 'failed' | 'skipped') | null;
+    eventId?: string | null;
+    syncedAt?: string | null;
+    error?: string | null;
+  };
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * Messages sent through the form on the Contact page. Tick "Handled" once replied.
@@ -351,6 +471,10 @@ export interface PayloadLockedDocument {
   id: number;
   document?:
     | ({
+        relationTo: 'event-requests';
+        value: number | EventRequest;
+      } | null)
+    | ({
         relationTo: 'contact-messages';
         value: number | ContactMessage;
       } | null)
@@ -411,6 +535,122 @@ export interface PayloadMigration {
   batch?: number | null;
   updatedAt: string;
   createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "event-requests_select".
+ */
+export interface EventRequestsSelect<T extends boolean = true> {
+  requestNumber?: T;
+  status?: T;
+  title?: T;
+  statusOrder?: T;
+  customerName?: T;
+  startsOn?: T;
+  occasion?: T;
+  guests?: T;
+  internalNotes?:
+    | T
+    | {
+        note?: T;
+        author?: T;
+        addedAt?: T;
+        id?: T;
+      };
+  customer?:
+    | T
+    | {
+        nameOrCompany?: T;
+        contactPerson?: T;
+        email?: T;
+        phone?: T;
+        address?: T;
+      };
+  event?:
+    | T
+    | {
+        type?: T;
+        date?: T;
+        startTime?: T;
+        endTime?: T;
+        adults?: T;
+        kids?: T;
+      };
+  selections?:
+    | T
+    | {
+        title?: T;
+        toBeDecided?: T;
+        items?:
+          | T
+          | {
+              name?: T;
+              upcharge?: T;
+              id?: T;
+            };
+        textLabel?: T;
+        text?: T;
+        textUpcharge?: T;
+        id?: T;
+      };
+  extras?:
+    | T
+    | {
+        name?: T;
+        price?: T;
+        unit?: T;
+        id?: T;
+      };
+  details?:
+    | T
+    | {
+        label?: T;
+        value?: T;
+        id?: T;
+      };
+  depositAcknowledged?: T;
+  notes?: T;
+  activity?:
+    | T
+    | {
+        at?: T;
+        by?: T;
+        message?: T;
+        id?: T;
+      };
+  pricing?:
+    | T
+    | {
+        adultPrice?: T;
+        kidPrice?: T;
+        spaceFeePercent?: T;
+        includedHours?: T;
+        extraHourPrice?: T;
+        notes?:
+          | T
+          | {
+              text?: T;
+              id?: T;
+            };
+      };
+  emails?:
+    | T
+    | {
+        customer?: T;
+        owner?: T;
+        sentAt?: T;
+        error?: T;
+      };
+  calendar?:
+    | T
+    | {
+        status?: T;
+        eventId?: T;
+        syncedAt?: T;
+        error?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -590,6 +830,111 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   createdAt?: T;
 }
 /**
+ * Prices, rules and menu choices used by the event request form on /events. Changes apply to new requests only.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "event-menu".
+ */
+export interface EventMenu {
+  id: number;
+  adultPrice: number;
+  kidPrice: number;
+  spaceFeePercent: number;
+  includedHours: number;
+  extraHourPrice: number;
+  /**
+   * e.g. "(excluding Open Bar)"
+   */
+  timeLimitNote?: string | null;
+  /**
+   * Shown in "Pricing & Notes" on the form, the emails and the PDF, between the lines written from the prices above (Base Price, Space Setup Fee, Open Bar, Time Limit). Choose where each line goes; lines in the same spot follow this list order (drag to reorder).
+   */
+  extraNotes?:
+    | {
+        title: string;
+        position: 'top' | 'afterBase' | 'afterFee' | 'afterExtras' | 'end';
+        text: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * 24-hour time, e.g. 09:00
+   */
+  earliestStart: string;
+  latestStart: string;
+  startStepMinutes: number;
+  eventTypes: {
+    name: string;
+    id?: string | null;
+  }[];
+  /**
+   * Starters, Penne, Main Dish, Kids Menu…
+   */
+  sections?:
+    | {
+        title: string;
+        /**
+         * Short id, e.g. "starters". Don’t change once used.
+         */
+        key: string;
+        description?: string | null;
+        selection: 'single' | 'multiple';
+        min?: number | null;
+        /**
+         * Empty = no limit
+         */
+        max?: number | null;
+        allowToBeDecided?: boolean | null;
+        forKids?: boolean | null;
+        priceTag?: ('adult' | 'kids') | null;
+        options?:
+          | {
+              name: string;
+              upcharge?: number | null;
+              available?: boolean | null;
+              id?: string | null;
+            }[]
+          | null;
+        /**
+         * e.g. "Add Risotto Type (optional) +$5"
+         */
+        textOption?: {
+          label?: string | null;
+          upcharge?: number | null;
+          placeholder?: string | null;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  extras?:
+    | {
+        name: string;
+        price: number;
+        unit: 'event' | 'adult';
+        available?: boolean | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Radio questions such as Wine Service and Alcohol.
+   */
+  choices?:
+    | {
+        label: string;
+        key: string;
+        options?:
+          | {
+              label: string;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
  * Photos on /gallery. Drag to reorder. Each image uses its Media "alt" text.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -662,6 +1007,89 @@ export interface SiteSetting {
   };
   updatedAt?: string | null;
   createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "event-menu_select".
+ */
+export interface EventMenuSelect<T extends boolean = true> {
+  adultPrice?: T;
+  kidPrice?: T;
+  spaceFeePercent?: T;
+  includedHours?: T;
+  extraHourPrice?: T;
+  timeLimitNote?: T;
+  extraNotes?:
+    | T
+    | {
+        title?: T;
+        position?: T;
+        text?: T;
+        id?: T;
+      };
+  earliestStart?: T;
+  latestStart?: T;
+  startStepMinutes?: T;
+  eventTypes?:
+    | T
+    | {
+        name?: T;
+        id?: T;
+      };
+  sections?:
+    | T
+    | {
+        title?: T;
+        key?: T;
+        description?: T;
+        selection?: T;
+        min?: T;
+        max?: T;
+        allowToBeDecided?: T;
+        forKids?: T;
+        priceTag?: T;
+        options?:
+          | T
+          | {
+              name?: T;
+              upcharge?: T;
+              available?: T;
+              id?: T;
+            };
+        textOption?:
+          | T
+          | {
+              label?: T;
+              upcharge?: T;
+              placeholder?: T;
+            };
+        id?: T;
+      };
+  extras?:
+    | T
+    | {
+        name?: T;
+        price?: T;
+        unit?: T;
+        available?: T;
+        id?: T;
+      };
+  choices?:
+    | T
+    | {
+        label?: T;
+        key?: T;
+        options?:
+          | T
+          | {
+              label?: T;
+              id?: T;
+            };
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
