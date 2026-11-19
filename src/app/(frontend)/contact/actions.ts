@@ -3,6 +3,8 @@
 import { getPayload } from 'payload'
 
 import config from '@/payload.config'
+import { escapeHtml, isEmailConfigured } from '@/lib/mail'
+import { verifyTurnstile } from '@/lib/turnstile'
 import { clientIp, isRateLimited } from '../lib/rateLimit'
 
 export type ContactField = 'firstName' | 'lastName' | 'email' | 'phone' | 'message'
@@ -18,18 +20,20 @@ const PHONE = /^[\d\s()+.-]{7,20}$/
 
 // "Let's Talk" form on /contact. Validates on the server, ignores bots (honeypot), limits
 // each visitor to 5 messages per 10 minutes, then saves the message for the admin inbox.
-// TODO (Stage 10): also email the restaurant once an email account is configured, and add
-// Cloudflare Turnstile.
+// Then emails the restaurant (Reply-To = the sender). A failed email never loses the message.
 export async function sendContactMessage(
   _prev: ContactFormState,
   formData: FormData,
 ): Promise<ContactFormState> {
   const get = (name: string) => String(formData.get(name) ?? '').trim()
+  // One-line fields: line breaks and control characters become spaces (names go into the
+  // email subject). The message keeps its line breaks.
+  const line = (name: string) => get(name).replace(/[\u0000-\u001f\u007f]+/g, ' ')
   const values = {
-    firstName: get('firstName'),
-    lastName: get('lastName'),
-    email: get('email'),
-    phone: get('phone'),
+    firstName: line('firstName'),
+    lastName: line('lastName'),
+    email: line('email'),
+    phone: line('phone'),
     message: get('message'),
   }
 
@@ -50,7 +54,8 @@ export async function sendContactMessage(
     return { status: 'error', message: 'Please check the highlighted fields.', errors, values }
   }
 
-  if (isRateLimited(`contact:${await clientIp()}`, 5, 10 * 60 * 1000)) {
+  const ip = await clientIp()
+  if (isRateLimited(`contact:${ip}`, 5, 10 * 60 * 1000)) {
     return {
       status: 'error',
       message: 'Too many messages in a short time. Please try again later, or call us.',
@@ -58,8 +63,12 @@ export async function sendContactMessage(
     }
   }
 
+  if (!(await verifyTurnstile(get('cf-turnstile-response'), ip))) {
+    return { status: 'error', message: 'Please complete the spam check and try again.', values }
+  }
+
+  const payload = await getPayload({ config })
   try {
-    const payload = await getPayload({ config })
     await payload.create({
       collection: 'contact-messages',
       data: { ...values, handled: false },
@@ -74,5 +83,34 @@ export async function sendContactMessage(
     }
   }
 
+  await notifyRestaurant(payload, values).catch((error) =>
+    console.error('Contact form: email to restaurant failed', error),
+  )
   return { status: 'success' }
+}
+
+async function notifyRestaurant(
+  payload: Awaited<ReturnType<typeof getPayload>>,
+  v: Record<ContactField, string>,
+) {
+  if (!isEmailConfigured()) return
+  const settings = await payload.findGlobal({
+    slug: 'site-settings',
+    depth: 0,
+    overrideAccess: true,
+  })
+  const to = (settings.internal?.notificationEmails ?? []).map((e) => e.email).filter(Boolean)
+  if (!to.length && settings.email) to.push(settings.email)
+  if (!to.length) return
+  const name = [v.firstName, v.lastName].filter(Boolean).join(' ')
+  const row = (label: string, value: string) =>
+    value
+      ? `<tr><td style="padding:8px 12px;font-weight:bold;border-bottom:1px solid #e5e7eb">${label}</td><td style="padding:8px 12px;border-bottom:1px solid #e5e7eb">${escapeHtml(value).replace(/\n/g, '<br>')}</td></tr>`
+      : ''
+  await payload.sendEmail({
+    to: to.join(', '),
+    replyTo: v.email,
+    subject: `New message from ${name} (website contact form)`,
+    html: `<div style="font-family:Arial,sans-serif;font-size:15px;color:#333"><p>New message from the La Veranda website. Reply to this email to answer ${escapeHtml(name)} directly.</p><table style="border-collapse:collapse">${row('Name', name)}${row('Email', v.email)}${row('Phone', v.phone)}${row('Message', v.message)}</table></div>`,
+  })
 }
