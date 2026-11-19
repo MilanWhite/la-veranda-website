@@ -13,6 +13,7 @@ import { fileURLToPath } from 'url'
 
 import config from '../payload.config'
 import { eventMenuSeed } from './eventMenu'
+import { replyTemplatesSeed } from './replyTemplates'
 import { brunchMenu, dinnerMenu } from './menus'
 
 const dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -235,12 +236,25 @@ async function seedEventMenu(payload: Payload) {
   const menu = await payload.findGlobal({ slug: 'event-menu', depth: 0 })
   if (menu.adultPrice != null) {
     log('event menu already filled in, skipping')
-    return
+  } else {
+    log('event menu')
+    await payload.updateGlobal({ slug: 'event-menu', data: eventMenuSeed })
   }
-  log('event menu')
-  await payload.updateGlobal({ slug: 'event-menu', data: eventMenuSeed })
+  // Reply templates were added later, so they get their own check
+  const withTemplates = await payload.findGlobal({
+    slug: 'event-menu',
+    depth: 0,
+    overrideAccess: true,
+  })
+  if (!withTemplates.replyTemplates?.length) {
+    log('reply templates')
+    await payload.updateGlobal({
+      slug: 'event-menu',
+      data: { replyTemplates: replyTemplatesSeed },
+      overrideAccess: true,
+    })
+  }
 }
-
 
 async function seedAdmin(payload: Payload) {
   const email = process.env.SEED_ADMIN_EMAIL
