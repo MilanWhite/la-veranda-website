@@ -17,17 +17,21 @@ export type TurnstileHandle = { reset: () => void }
 const SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY
 
 // Cloudflare Turnstile spam check. Renders nothing when no site key is configured.
-// Puts the token in a hidden "cf-turnstile-response" field of the surrounding form.
+// The token is kept in React state and sent in a hidden "cf-turnstile-response" field.
+// (Not Turnstile's own hidden field: React clears that one when it resets the form after
+// a submit, while the widget still shows "Success!", so the next submit had no token.)
 export const Turnstile = forwardRef<TurnstileHandle, { theme?: 'dark' | 'light' }>(
   function Turnstile({ theme = 'dark' }, ref) {
     const box = useRef<HTMLDivElement>(null)
     const widget = useRef<string | null>(null)
+    const [token, setToken] = useState('')
     const [loaded, setLoaded] = useState(
       () => typeof window !== 'undefined' && Boolean(window.turnstile),
     )
 
     useImperativeHandle(ref, () => ({
       reset: () => {
+        setToken('')
         if (widget.current) window.turnstile?.reset(widget.current)
       },
     }))
@@ -37,7 +41,10 @@ export const Turnstile = forwardRef<TurnstileHandle, { theme?: 'dark' | 'light' 
       widget.current = window.turnstile.render(box.current, {
         sitekey: SITE_KEY,
         theme,
-        'response-field-name': 'cf-turnstile-response',
+        'response-field': false,
+        callback: (t: string) => setToken(t),
+        'expired-callback': () => setToken(''),
+        'error-callback': () => setToken(''),
       })
     }, [loaded, theme])
 
@@ -50,6 +57,7 @@ export const Turnstile = forwardRef<TurnstileHandle, { theme?: 'dark' | 'light' 
           onReady={() => setLoaded(true)}
         />
         <div ref={box} className="turnstile" />
+        <input type="hidden" name="cf-turnstile-response" value={token} readOnly />
       </>
     )
   },
