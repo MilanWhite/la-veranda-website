@@ -689,17 +689,22 @@ label {
   width: 100%;
 }
 
-/* Call-to-action on the old site's statement photo ("Book Your Reservation/Event") */
+/* Page-end call-to-action: darkened photo, fixed like the homepage "window" (scrolls
+   normally on touch devices). Darker than the banners so the text stays readable. */
 .cta-photo {
-  position: relative;
   display: flex;
   align-items: center;
   min-height: clamp(380px, 40vw, 500px);
+  background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), var(--cta-image);
+  background-position: center;
+  background-size: cover;
+  background-attachment: fixed;
 }
 
-/* Darker than the banners so the paragraph text stays readable on busy photos */
-.cta-photo .darken {
-  filter: brightness(0.3);
+@media (hover: none), (prefers-reduced-motion: reduce) {
+  .cta-photo {
+    background-attachment: scroll;
+  }
 }
 
 .cta-photo .lead {

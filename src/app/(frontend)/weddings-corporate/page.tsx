@@ -285,23 +285,20 @@ export default async function WeddingsCorporatePage() {
       )}
 
       <CtaSection
-        photo
         title="Let’s Plan Your Celebration"
         actions={[
-          { label: 'Request a Quote', href: '/events#book-an-event', solid: true },
-          ...(settings.phone
-            ? [
-                {
-                  label: `Call ${settings.phone}`,
-                  href: `tel:${settings.phone.replace(/[^\d+]/g, '')}`,
-                },
-              ]
-            : []),
+          { label: 'Book an Event', href: '/events#book-an-event' },
+          settings.phone
+            ? {
+                label: `Call ${settings.phone}`,
+                href: `tel:${settings.phone.replace(/[^\d+]/g, '')}`,
+              }
+            : undefined,
         ]}
       >
         <p>
-          Tell us about your day and we’ll send you a quotation by email. Sending a request does not
-          confirm your booking, and no payment is required until you’re ready.
+          Tell us about your day and we’ll send you a quotation by email. No payment is required
+          until you’re ready.
         </p>
       </CtaSection>
     </>
