@@ -162,14 +162,15 @@ export default async function EventsPage() {
       )}
 
       <CtaSection
-        photo
         title="Book Your Event"
-        actions={[{ label: 'Request an Event', href: '#book-an-event', solid: true }]}
+        actions={[
+          { label: 'Book an Event', href: '#book-an-event' },
+          { label: 'Weddings & Corporate', href: '/weddings-corporate' },
+        ]}
       >
         <p>
-          Here you will find the ultimate space for any special event, whether it’s a wedding, a
-          corporate meeting or party, a bridal shower, a special occasion or an intimate gathering.
-          La Veranda is completely transformable to make your event unique and unforgettable.
+          Weddings, corporate parties, bridal showers or an intimate gathering: La Veranda
+          transforms to make your event unique and unforgettable.
         </p>
       </CtaSection>
     </>

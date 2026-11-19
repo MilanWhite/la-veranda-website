@@ -1,20 +1,13 @@
 import type { Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
-import {
-  FaBriefcase,
-  FaCalendarCheck,
-  FaDoorOpen,
-  FaEnvelopeOpenText,
-  FaFileInvoiceDollar,
-  FaGlassCheers,
-  FaLeaf,
-  FaRegHeart,
-  FaUtensils,
-} from 'react-icons/fa'
+import { FaDoorOpen, FaGlassCheers, FaLeaf, FaUtensils } from 'react-icons/fa'
 
 import corporateBuffet from '@/assets/corporate-buffet.webp'
-import weddingsBanner from '@/assets/weddings-banner.webp'
+import courseMain from '@/assets/course-main.webp'
+import coursePasta from '@/assets/course-pasta.webp'
+import courseStarters from '@/assets/course-starters.webp'
+import weddingsBanner from '@/assets/weddings-room-banner.webp'
 import weddingsCelebration from '@/assets/weddings-celebration.webp'
 import { CtaSection } from '../components/CtaSection'
 import { PageBanner } from '../components/PageBanner'
@@ -57,41 +50,48 @@ const highlights = [
 ]
 
 const menuCourses = [
-  { course: 'Starters', detail: 'Four starters of your choice, served family style' },
-  { course: 'Pasta', detail: 'Penne with your choice of sauce, or ask about risotto' },
-  { course: 'Main', detail: 'Chicken, steak, veal, salmon, surf and turf and more' },
+  {
+    step: 'To start',
+    course: 'Starters',
+    detail: 'Four starters of your choice, served family style.',
+    image: courseStarters,
+    alt: 'Platter of fried calamari with dipping sauces and lemon',
+  },
+  {
+    step: 'Then',
+    course: 'Pasta',
+    detail: 'Penne with your choice of sauce, or ask about risotto.',
+    image: coursePasta,
+    alt: 'Squid ink spaghetti with scallops and crab',
+  },
+  {
+    step: 'Finally',
+    course: 'Main',
+    detail: 'Chicken, steak, veal, salmon, surf and turf and more.',
+    image: courseMain,
+    alt: 'Grilled meat with arugula and cherry tomatoes on a wooden board',
+  },
 ]
 
 const steps = [
   {
-    icon: FaEnvelopeOpenText,
     title: 'Send Your Request',
     text: 'Tell us your date, times, number of guests and menu choices. Not sure yet? Leave them to be decided.',
   },
   {
-    icon: FaFileInvoiceDollar,
     title: 'Receive Your Quote',
     text: 'We review your request and email you a quotation. No payment is required until you’re ready.',
   },
   {
-    icon: FaCalendarCheck,
     title: 'Hold Your Date',
     text: 'A non-refundable deposit secures your date. We then fine-tune the details with you.',
   },
   {
-    icon: FaGlassCheers,
     title: 'Celebrate',
     text: 'Enjoy your day with your guests. Our team takes care of the food, the service and the room.',
   },
 ]
 
-const weddingOccasions = [
-  'Wedding receptions',
-  'Engagement parties',
-  'Bridal showers',
-  'Baby showers',
-]
-const corporateOccasions = ['Corporate functions', 'Meetings', 'Company parties']
 const otherOccasions = ['Communions', 'Confirmations', 'Baptisms', 'Sweet 16s', 'Birthdays']
 
 export default async function WeddingsCorporatePage() {
@@ -143,9 +143,7 @@ export default async function WeddingsCorporatePage() {
             sizes="(max-width: 900px) 100vw, 50vw"
           />
           <div className="feature-row-text">
-            <p className="eyebrow eyebrow-accent">
-              <FaRegHeart aria-hidden /> Weddings
-            </p>
+            <p className="eyebrow eyebrow-accent">Weddings</p>
             <h2>Your Wedding, Your Way</h2>
             <p>
               From an intimate engagement party to a full wedding reception, La Veranda is
@@ -153,11 +151,6 @@ export default async function WeddingsCorporatePage() {
               your menu, set the mood, and let our team take care of the rest while you celebrate
               with the people you love.
             </p>
-            <ul className="check-pills">
-              {weddingOccasions.map((o) => (
-                <li key={o}>{o}</li>
-              ))}
-            </ul>
             <Link href="/events#book-an-event" className="button">
               Plan Your Wedding
             </Link>
@@ -187,15 +180,22 @@ export default async function WeddingsCorporatePage() {
         <div className="container center">
           <p className="eyebrow eyebrow-accent">Standard Three-Course Plated Dinner</p>
           <h2 className="section-title">Your Event Menu</h2>
-          <ul className="course-list">
-            {menuCourses.map((c, i) => (
+          {/* The three courses in order, styled like the Specials cards */}
+          <ol className="course-list">
+            {menuCourses.map((c) => (
               <li key={c.course}>
-                <span className="course-number">{String(i + 1).padStart(2, '0')}</span>
+                <Image
+                  src={c.image}
+                  alt={c.alt}
+                  className="course-image"
+                  sizes="(max-width: 700px) 100vw, 340px"
+                />
+                <p className="course-step">{c.step}</p>
                 <h3>{c.course}</h3>
                 <p>{c.detail}</p>
               </li>
             ))}
-          </ul>
+          </ol>
           <p className="small">
             Served with a mixed green salad, soft drinks and coffee. Kids’ menu, open bar and
             buffet-style stations available. See the Group Menu for all choices and current pricing.
@@ -220,20 +220,13 @@ export default async function WeddingsCorporatePage() {
             sizes="(max-width: 900px) 100vw, 50vw"
           />
           <div className="feature-row-text">
-            <p className="eyebrow eyebrow-accent">
-              <FaBriefcase aria-hidden /> Corporate
-            </p>
+            <p className="eyebrow eyebrow-accent">Corporate</p>
             <h2>Meetings, Parties & Corporate Functions</h2>
             <p>
               Host your team, clients or partners somewhere memorable. Whether it’s a corporate
               meeting, a company party or a celebration of a big milestone, we set up the room and
               the menu around your event, so all you have to do is show up.
             </p>
-            <ul className="check-pills">
-              {corporateOccasions.map((o) => (
-                <li key={o}>{o}</li>
-              ))}
-            </ul>
             <Link href="/events#book-an-event" className="button">
               Plan a Corporate Event
             </Link>
@@ -247,10 +240,8 @@ export default async function WeddingsCorporatePage() {
           <h2 className="section-title">How It Works</h2>
           <hr className="divider" />
           <ol className="steps">
-            {steps.map(({ icon: Icon, title, text }, i) => (
+            {steps.map(({ title, text }) => (
               <li key={title}>
-                <span className="step-number">{i + 1}</span>
-                <Icon aria-hidden className="highlight-icon" />
                 <h3>{title}</h3>
                 <p>{text}</p>
               </li>
@@ -285,23 +276,20 @@ export default async function WeddingsCorporatePage() {
       )}
 
       <CtaSection
-        photo
         title="Let’s Plan Your Celebration"
         actions={[
-          { label: 'Request a Quote', href: '/events#book-an-event', solid: true },
-          ...(settings.phone
-            ? [
-                {
-                  label: `Call ${settings.phone}`,
-                  href: `tel:${settings.phone.replace(/[^\d+]/g, '')}`,
-                },
-              ]
-            : []),
+          { label: 'Book an Event', href: '/events#book-an-event' },
+          settings.phone
+            ? {
+                label: `Call ${settings.phone}`,
+                href: `tel:${settings.phone.replace(/[^\d+]/g, '')}`,
+              }
+            : undefined,
         ]}
       >
         <p>
-          Tell us about your day and we’ll send you a quotation by email. Sending a request does not
-          confirm your booking, and no payment is required until you’re ready.
+          Tell us about your day and we’ll send you a quotation by email. No payment is required
+          until you’re ready.
         </p>
       </CtaSection>
     </>

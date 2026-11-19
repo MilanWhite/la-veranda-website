@@ -86,17 +86,15 @@ export default async function SpecialsPage() {
       </section>
 
       <CtaSection
-        photo
         title="Book Your Table"
         actions={[
-          { label: 'Reservations', href: '/reservations' },
+          { label: 'Reserve a Table', href: '/reservations' },
           { label: 'Book an Event', href: '/events#book-an-event' },
         ]}
       >
         <p>
-          Make every celebration memorable! Whether it’s Valentine’s Day, Easter, Christmas or New
-          Year’s Eve, book your table and enjoy a spectacular dining experience with gourmet
-          flavours and a charming ambiance.
+          Valentine’s Day, Easter, Christmas or New Year’s Eve: book your table and celebrate with
+          gourmet flavours in a charming setting.
         </p>
       </CtaSection>
     </>
