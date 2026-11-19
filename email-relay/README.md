@@ -14,6 +14,15 @@ Runs on Cloudflare's free Workers plan (account: booking@laverandaresto.com).
 - Emails are sent only from `SMTP_USER`; max 50 recipients and 25 MB.
 - The Gmail app password lives only in Cloudflare's encrypted secrets.
 
+## Retries
+
+Gmail sometimes refuses the login from Cloudflare's servers (`535 Username and Password not
+accepted`) and accepts the same login moments later. A refused login, a temporary SMTP error
+(4xx) or a lost connection is retried on a fresh connection: 3 attempts in all, 1 s and 3 s
+apart. Permanent errors (other 5xx) aren't retried, and nothing is retried once the end of the
+email has been sent, so an email is never delivered twice. Each failed attempt is logged
+(`npx wrangler tail`), so you can see how often it happens.
+
 ## Setup
 
 ```bash
