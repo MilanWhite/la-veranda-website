@@ -1,0 +1,256 @@
+// La Veranda admin styles. Uses Payload's theme variables; hierarchy comes from type and
+// spacing, not boxes.
+
+:root {
+  --lv-accent: #3d93a6;
+  --lv-ok: #2e9e6a;
+  --lv-bad: #c0392b;
+}
+
+.lv-muted {
+  color: var(--theme-elevation-500);
+}
+
+.lv-msg {
+  margin: 12px 0 0;
+  font-size: 14px;
+}
+
+.lv-msg-error {
+  color: var(--lv-bad);
+}
+
+// ── Status badges ─────────────────────────────────────────────────
+.lv-badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.lv-badge-pending {
+  background: #fbf0d9;
+  color: #8a5a00;
+}
+
+.lv-badge-approved {
+  background: #dcf2e6;
+  color: #1d6b45;
+}
+
+.lv-badge-declined,
+.lv-badge-cancelled {
+  background: #f8e1de;
+  color: #a12a1e;
+}
+
+// ── Small shared action buttons ───────────────────────────────────
+.lv-act {
+  display: inline-flex;
+  align-items: center;
+  height: 36px;
+  padding: 0 14px;
+  border: 1px solid var(--theme-elevation-150);
+  border-radius: 6px;
+  background: var(--theme-elevation-0);
+  color: var(--theme-text);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    border-color: var(--theme-elevation-300);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: wait;
+  }
+}
+
+.lv-act-approve {
+  border-color: var(--lv-ok);
+  background: var(--lv-ok);
+  color: #fff;
+
+  &:hover:not(:disabled) {
+    border-color: #268556;
+    background: #268556;
+  }
+}
+
+.lv-act-decline {
+  color: var(--lv-bad);
+
+  &:hover:not(:disabled) {
+    border-color: var(--lv-bad);
+  }
+}
+
+// ── Event request page ────────────────────────────────────────────
+// Payload's title row and sidebar are replaced by one bar: title + status on the left,
+// actions + Save + ⋯ on the right (RequestHeader sits in the document controls).
+body:has(.collection-edit--event-requests) .doc-header {
+  display: none;
+}
+
+.collection-edit--event-requests {
+  .doc-controls__content {
+    display: none;
+  }
+
+  .doc-controls__controls-wrapper {
+    flex: 1;
+  }
+
+  .doc-controls__controls {
+    flex: 1;
+    flex-wrap: wrap;
+    row-gap: 10px;
+  }
+
+  .document-fields__sidebar-wrap,
+  .document-fields__sidebar {
+    display: none;
+  }
+
+  .document-fields__main {
+    width: 100%;
+    max-width: none;
+  }
+
+  // Title bar: room above the title and below the date
+  .doc-controls__wrapper {
+    height: auto;
+    padding-top: 14px;
+    padding-bottom: 16px;
+  }
+
+  // Tabs sit right under the title bar, with the labels centred in their strip (Payload
+  // gives them 20px below and nothing above)
+  .document-fields__edit {
+    padding-top: 0;
+  }
+
+  .tabs-field {
+    margin-top: 0;
+  }
+
+  .tabs-field__tab-button {
+    padding-top: 16px;
+    padding-bottom: 16px;
+  }
+
+  .tabs-field__tabs-wrap {
+    margin-bottom: 28px;
+  }
+}
+
+.lv-reqbar {
+  display: flex;
+  flex: 1;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 24px;
+  margin-right: 8px;
+}
+
+.lv-reqbar-title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 12px;
+
+  h1 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 600;
+    line-height: 1.2;
+  }
+
+  p {
+    flex-basis: 100%;
+    margin: 0;
+    color: var(--theme-elevation-500);
+    font-size: 14px;
+  }
+}
+
+.lv-reqbar-number {
+  color: var(--theme-elevation-500);
+  font-weight: 500;
+}
+
+.lv-reqbar-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.lv-reqbar-error {
+  color: var(--lv-bad);
+  font-size: 13px;
+}
+
+// Overview tab: the booking summary, like the PDF
+.lv-sheet {
+  max-width: 860px;
+  padding: 8px 0 40px;
+
+  h2 {
+    margin: 0 0 16px;
+    font-size: 18px;
+    font-weight: 600;
+  }
+
+  h3 {
+    margin: 32px 0 10px;
+    font-size: 16px;
+    font-weight: 600;
+  }
+}
+
+.lv-sheet-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15px;
+
+  th,
+  td {
+    padding: 10px 14px;
+    text-align: left;
+    vertical-align: top;
+  }
+
+  tr:nth-child(odd) {
+    background: var(--theme-elevation-50);
+  }
+
+  th {
+    width: 34%;
+    color: var(--theme-elevation-600);
+    font-weight: 500;
+  }
+}
+
+.lv-sheet-notes {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.lv-sheet-meta {
+  margin: 36px 0 0;
+  color: var(--theme-elevation-450);
+  font-size: 12px;
+  line-height: 1.7;
+}

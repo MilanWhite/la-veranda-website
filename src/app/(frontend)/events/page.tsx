@@ -6,11 +6,13 @@ import { FaRegCheckCircle } from 'react-icons/fa'
 import eventsBanner from '@/assets/events-banner.webp'
 import weddingsBanner from '@/assets/weddings-banner.webp'
 import { CtaSection } from '../components/CtaSection'
+import { startTimes } from '@/lib/eventRequests/validate'
 import { FormPlaceholder } from '../components/FormPlaceholder'
 import { PageBanner } from '../components/PageBanner'
 import { PhotoCarousel } from '../components/PhotoCarousel'
 import { getSiteSettings } from '../getSiteSettings'
-import { asMedia, getGallery, getMenu } from '../lib/content'
+import { asMedia, getEventMenu, getGallery, getMenu } from '../lib/content'
+import { EventRequestForm } from './EventRequestForm'
 
 export const metadata: Metadata = {
   title: 'Events',
@@ -33,10 +35,11 @@ const eventTypes = [
 ]
 
 export default async function EventsPage() {
-  const [gallery, brunch, settings] = await Promise.all([
+  const [gallery, brunch, settings, eventMenu] = await Promise.all([
     getGallery(),
     getMenu('brunch'),
     getSiteSettings(),
+    getEventMenu(),
   ])
   const photos = gallery.filter((g) => g.showOnEventsPage).map((g) => g.image)
   const groupMenu = asMedia(settings.groupMenuPdf)
@@ -120,26 +123,24 @@ export default async function EventsPage() {
       </section>
 
       <section id="book-an-event" className="section anchor-target">
-        <div className="container narrow">
+        <div className="container form-container">
           <h2 className="section-title">Event Contract</h2>
           <p className="lead center">
             Fill in your event details. You’ll receive a quotation by email before any payment is
             required. Sending a request does not confirm your booking.
           </p>
 
-          {/* Placeholder: the online event request form (customer details, date and time,
-              guests, menu selections, extras, notes) is built in Stages 8–10. */}
-          <FormPlaceholder
-            id="event-request-form"
-            title="Online event request form"
-            settings={settings}
-          >
-            <p>
-              Our online event request form is on its way. Until then, contact us with the date,
-              start and end time, type of event and number of guests (adults and kids), and we’ll
-              reply with a quotation.
-            </p>
-          </FormPlaceholder>
+          {eventMenu.adultPrice != null ? (
+            <EventRequestForm menu={eventMenu} startTimes={startTimes(eventMenu)} />
+          ) : (
+            <FormPlaceholder
+              id="event-request-form"
+              title="Online event request form"
+              settings={settings}
+            >
+              <p>Online event requests are not available right now. Please email or call us.</p>
+            </FormPlaceholder>
+          )}
         </div>
       </section>
 

@@ -6,10 +6,12 @@ import { fileURLToPath } from 'url'
 import sharp from 'sharp'
 
 import { ContactMessages } from './collections/ContactMessages'
+import { EventRequests } from './collections/EventRequests'
 import { Media } from './collections/Media'
 import { Menus } from './collections/Menus'
 import { Specials } from './collections/Specials'
 import { Users } from './collections/Users'
+import { EventMenu } from './globals/EventMenu'
 import { Gallery } from './globals/Gallery'
 import { SiteSettings } from './globals/SiteSettings'
 import { emailAdapter } from './lib/mail'
@@ -24,8 +26,8 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
-  collections: [ContactMessages, Menus, Specials, Media, Users],
-  globals: [Gallery, SiteSettings],
+  collections: [EventRequests, ContactMessages, Menus, Specials, Media, Users],
+  globals: [EventMenu, Gallery, SiteSettings],
   editor: lexicalEditor(),
   email: emailAdapter(),
   secret: process.env.PAYLOAD_SECRET || '',
