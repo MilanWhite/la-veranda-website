@@ -9,6 +9,7 @@ import * as migration_20261119_051436_specials_repeat from './20261119_051436_sp
 import * as migration_20261119_051945_event_requests from './20261119_051945_event_requests';
 import * as migration_20261119_052352_contact_message_replies from './20261119_052352_contact_message_replies';
 import * as migration_20261119_052444_event_reply_templates from './20261119_052444_event_reply_templates';
+import * as migration_20261119_220000_request_number_sequence from './20261119_220000_request_number_sequence';
 
 export const migrations = [
   {
@@ -65,5 +66,10 @@ export const migrations = [
     up: migration_20261119_052444_event_reply_templates.up,
     down: migration_20261119_052444_event_reply_templates.down,
     name: '20261119_052444_event_reply_templates'
+  },
+  {
+    up: migration_20261119_220000_request_number_sequence.up,
+    down: migration_20261119_220000_request_number_sequence.down,
+    name: '20261119_220000_request_number_sequence',
   },
 ];

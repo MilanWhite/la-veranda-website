@@ -1,3 +1,4 @@
+import { randomUUID } from 'crypto'
 import { JWT } from 'google-auth-library'
 
 import type { EventRequest } from '../payload-types'
@@ -46,11 +47,13 @@ function getClient() {
 }
 
 /**
- * Same request → same Google event id, so approving twice can never create a duplicate.
- * Google ids allow only a–v and 0–9.
+ * A request keeps the event id it got the first time (saved on the request), so approving
+ * twice can never create a duplicate. New ids are random, so different sites/databases
+ * writing to the same calendar (local, staging, live) never overwrite each other's events.
+ * Google ids allow only a–v and 0–9 (a UUID's hex digits fit).
  */
-export function calendarEventId(requestId: number | string) {
-  return `lvreq${String(requestId).replace(/[^0-9a-v]/g, '')}`
+export function newCalendarEventId() {
+  return `lvreq${randomUUID().replace(/-/g, '')}`
 }
 
 function addOneDay(date: string) {
@@ -105,7 +108,7 @@ export async function upsertCalendarEvent(
 ): Promise<CalendarResult> {
   const google = getClient()
   if (!google || !calendarId) return { status: 'skipped', error: 'Google Calendar is not set up' }
-  const id = calendarEventId(r.id)
+  const id = r.calendar?.eventId || newCalendarEventId()
   const base = `${API}/calendars/${encodeURIComponent(calendarId)}/events`
   const body = eventBody(r, opts)
   try {
@@ -123,11 +126,13 @@ export async function upsertCalendarEvent(
 
 export async function removeCalendarEvent(
   calendarId: string | null | undefined,
-  requestId: number | string,
+  eventId: string | null | undefined,
 ): Promise<CalendarResult> {
+  // Never added to the calendar: nothing to remove
+  if (!eventId) return { status: 'removed' }
   const google = getClient()
   if (!google || !calendarId) return { status: 'skipped', error: 'Google Calendar is not set up' }
-  const id = calendarEventId(requestId)
+  const id = eventId
   try {
     await google.request({
       url: `${API}/calendars/${encodeURIComponent(calendarId)}/events/${id}`,
