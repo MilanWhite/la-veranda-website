@@ -115,9 +115,9 @@ Related docs:
 - [x] Formatting configured
 - [x] Database migrations workflow established
 - [x] Project folder structure established
-- [-] Railway project created with PostgreSQL — deferred by user; local-only for now
-- [-] Early Railway deployment succeeds — deferred
-- [-] Production app connects to production PostgreSQL — deferred
+- [x] Railway project created with PostgreSQL: project `calm-kindness` (account booking@laverandaresto.com), services `Postgres` + `la-veranda-web`, volume `media` at `/data` (`MEDIA_DIR=/data`). Used as the **staging** site at https://la-veranda-web-production.up.railway.app until launch
+- [!] Early Railway deployment succeeds: blocked, the Railway account has no GitHub access to `MilanWhite/la-veranda-website` yet (connect the repo in the service's Settings → Source). Build = `npm run migrate && npm run build` (DB via the public URL, since the private network isn't available during builds); start = `npm run seed && npm run start`
+- [ ] Production app connects to production PostgreSQL
 
 **Working result:** The application runs locally and in production and connects to PostgreSQL.
 
@@ -507,6 +507,7 @@ Newest entries first.
 
 | Date       | Stage | Summary of work                          | By    |
 | ---------- | ----- | ---------------------------------------- | ----- |
+| 2026-11-19 | 2, 15 | Railway staging set up in `calm-kindness`: Postgres, `la-veranda-web` service, media volume, Railway domain, non-secret env vars (Turnstile test keys), build/start commands. First deploy waits on connecting GitHub to the Railway account; secrets (SMTP, Google) still to be added in Railway. | Agent |
 | 2026-11-19 | 8–14 | Admin redesign (bookings-first dashboard with the requests list + full-height Coming up panel, request page top bar with actions next to Save, booking-summary Overview, contact messages inbox, light mode, sidebar logo); request sorting pending-first; calendar fixed (GOOGLE_CALENDAR_ID → booking@); restaurant email made safe to reply to (no admin link); Google hours work with just an API key (`npm run check:google-hours`); old-site redirects. Full test run: 41 validator cases, real form/contact submits, honeypot, spam limits, every status change, edits, notes, resend, PDF, delete, 18 signed-out API checks, all pages at 390/1366px, links, fresh-database migrations, production build. Fixed: Feb 30 accepted, line breaks in one-line fields, spam limit counting failed tries, bad-status crash, repeat approvals, false 'Menu selections updated' history, orphaned calendar events on delete. | Agent |
 | 2026-11-18 | 6, 7 | Feedback round 3: dinner + brunch menus replaced from the restaurant's printed menus (47 + 52 items, seed + dev DB); "Download Dinner Menu" placeholder button; gallery full width, always 3 columns (uneven ends instead of heavy crops), slow 1s zoom without dimming; homepage photo as a fixed "window"; nav dropdown closes after choosing a page; Events and Weddings photos as a carousel (4/3/2 across, autoplay, arrows, dots); event form on a light paper card; repeating specials (weekly / monthly e.g. last Friday, + migration) with Salsa Night seeded; consistent CTA sections; footer menu links fixed for the new sections. Verified tsc, lint, prettier, build, desktop + 390px, repeat rules. | Agent |
 | 2026-11-17 | 8–12 | Event request workflow (branch `event-request-workflow`): Event Menu & Form global (seeded from old form), Event Requests collection (#4834+, Pending/Approved/Declined/Cancelled rules, plain-language History, internal notes), form on `/events` (server validation, price snapshot, honeypot, rate limit, Turnstile), booking-summary PDF, customer + restaurant emails via Gmail SMTP (Reply-To customer), contact form emails, Google Calendar sync (approve/edit/cancel, idempotent event id), switchable Google hours, La Veranda admin (dashboard, request overview with Approve/Decline/Cancel, logo). Verified: submit → saved → both emails sent; PDF; status rules; History; 401 when signed out. Calendar success path waits on enabling the Calendar API. | Agent |
