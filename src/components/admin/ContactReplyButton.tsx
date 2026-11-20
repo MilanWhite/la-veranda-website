@@ -60,7 +60,7 @@ export function ContactReplyButton({
         <div className="lv-reply-dialog-head">
           <h2>Reply to {firstName}</h2>
           <p>
-            To <strong>{email}</strong> · Subject “Re: Your message to La Veranda”
+            To <strong>{email}</strong> · Subject “Re: Your message to La Veranda ({firstName}, …)”
           </p>
         </div>
         <textarea

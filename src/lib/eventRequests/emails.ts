@@ -4,7 +4,13 @@ import path from 'path'
 import type { Payload } from 'payload'
 
 import type { EventRequest } from '../../payload-types'
-import { escapeHtml, isEmailConfigured, messageIdDomain } from '../mail'
+import {
+  escapeHtml,
+  isEmailConfigured,
+  messageIdDomain,
+  replyToUnlessSender,
+  splitRestaurantRecipients,
+} from '../mail'
 import { renderBookingPdf, pdfFilename } from './pdf'
 import { formatDate, formatTime, requestNotes, summaryRows } from './summary'
 
@@ -119,27 +125,35 @@ export async function sendRequestEmails(payload: Payload, request: EventRequest)
       logoAttachment(),
       ...(pdf ? [{ filename: pdfFilename(request), content: pdf }] : []),
     ]
+    // One email, one conversation: the customer's confirmation is Bcc'd to the restaurant's
+    // own mailbox (booking@), so replies from the website, from Gmail or from the customer all
+    // land in that same thread on both sides. Any other notification address gets the
+    // separate notification below (Reply-To = customer).
+    const { mailbox, others } = splitRestaurantRecipients(ownerEmails)
     try {
       messageId = newMessageId()
       await payload.sendEmail({
         to: request.customer.email,
-        // Customer replies go to the mailbox that the admin's replies come from
-        replyTo: settings.internal?.replyFromEmail || settings.email || undefined,
+        ...(mailbox ? { bcc: mailbox } : {}),
+        replyTo: replyToUnlessSender(settings.internal?.replyFromEmail || settings.email),
         subject: conversationSubject(request),
         messageId,
         html: customerEmailHtml(request),
         attachments,
       })
       customer = 'sent'
+      if (mailbox) owner = 'sent'
     } catch (error) {
       customer = 'failed'
       errors.push(`Customer email: ${(error as Error).message}`)
     }
 
-    if (ownerEmails.length) {
+    // The restaurant must hear about the request even if the customer's email failed
+    const notify = [...others, ...(mailbox && customer === 'failed' ? [mailbox] : [])]
+    if (notify.length) {
       try {
         await payload.sendEmail({
-          to: ownerEmails.join(', '),
+          to: notify.join(', '),
           replyTo: request.customer.email,
           // Reads naturally to the customer as "Re: …" when staff reply
           subject: `Event request #${request.requestNumber}: ${request.event.type} on ${formatDate(request.event.date)}`,
@@ -203,7 +217,7 @@ export async function sendCustomerReply(
 
   await payload.sendEmail({
     to: request.customer.email,
-    replyTo: settings.internal?.replyFromEmail || settings.email || undefined,
+    replyTo: replyToUnlessSender(settings.internal?.replyFromEmail || settings.email),
     subject: `Re: ${conversationSubject(request)}`,
     messageId: newMessageId(),
     ...(original ? { inReplyTo: original, references: [original] } : {}),
