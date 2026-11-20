@@ -21,6 +21,8 @@ export async function ensureNavDefaults(payload: Payload, user: { id: number }) 
   if (existing.docs.length) return
   await payload.create({
     collection: 'payload-preferences',
+    // Payload fills the preference's "user" field from the request user, so pass it here
+    user: { ...user, collection: 'users' },
     data: {
       key: 'nav',
       user: { relationTo: 'users', value: user.id },
