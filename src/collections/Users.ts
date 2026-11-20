@@ -30,7 +30,12 @@ export const Users: CollectionConfig = {
     // First sign-in: start with only the daily "Bookings" group open in the sidebar.
     afterLogin: [
       async ({ req, user }) => {
-        await ensureNavDefaults(req.payload, user)
+        // Only a sidebar default: never let it stop someone from signing in.
+        try {
+          await ensureNavDefaults(req.payload, user, req)
+        } catch (err) {
+          req.payload.logger.error({ err, msg: 'Could not set default sidebar groups' })
+        }
       },
     ],
   },
