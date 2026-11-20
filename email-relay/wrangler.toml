@@ -1,0 +1,16 @@
+# La Veranda email relay: website (Railway) → this Worker (HTTPS) → Gmail SMTP.
+# Deploy: cd email-relay && npx wrangler deploy
+# Secrets (never in this file): npx wrangler secret put SMTP_PASS / RELAY_SECRET
+name = "la-veranda-email-relay"
+main = "src/index.ts"
+compatibility_date = "2026-11-01"
+
+# Only the Worker's own workers.dev address; no custom domain or DNS needed.
+workers_dev = true
+preview_urls = false
+
+[vars]
+SMTP_USER = "booking@laverandaresto.com"
+
+[observability]
+enabled = true
