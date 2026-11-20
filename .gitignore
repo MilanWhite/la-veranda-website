@@ -50,3 +50,7 @@ next-env.d.ts
 
 # local tooling
 /.claude
+
+# Cloudflare Worker local state
+/email-relay/.wrangler
+/email-relay/node_modules

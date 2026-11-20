@@ -2,7 +2,7 @@ import { randomUUID } from 'crypto'
 import type { Endpoint, Payload } from 'payload'
 
 import type { ContactMessage } from '../payload-types'
-import { escapeHtml, isEmailConfigured } from './mail'
+import { escapeHtml, isEmailConfigured, messageIdDomain } from './mail'
 
 // Replies to "Let's Talk" contact messages, sent from the admin inbox as the restaurant.
 // The visitor never got an email when they wrote to us, so each reply quotes their original
@@ -13,11 +13,7 @@ export const CONTACT_REPLY_SUBJECT = 'Re: Your message to La Veranda'
 
 const json = (body: unknown, status = 200) => Response.json(body, { status })
 
-const newMessageId = () => {
-  const domain =
-    (process.env.EMAIL_FROM || process.env.SMTP_USER || '').split('@')[1] || 'localhost'
-  return `<contact-reply.${randomUUID()}@${domain}>`
-}
+const newMessageId = () => `<contact-reply.${randomUUID()}@${messageIdDomain()}>`
 
 const when = (iso: string) =>
   new Intl.DateTimeFormat('en-CA', {
