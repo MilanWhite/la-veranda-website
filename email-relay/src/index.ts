@@ -12,6 +12,10 @@
  * - Mail goes out only from SMTP_USER; at most 50 recipients; at most 25 MB (Gmail's limit).
  * - Errors return the SMTP server's reply only, never the password or the email contents.
  *
+ * Retries: Gmail sometimes refuses the login from Cloudflare's servers and accepts it moments
+ * later, so a refused login, a temporary error or a lost connection is retried (3 attempts in
+ * all, 1 s and 3 s apart). Nothing is retried once the end of the email has been sent.
+ *
  * Secrets (wrangler secret put): SMTP_PASS (Gmail app password), RELAY_SECRET.
  * Var (wrangler.toml): SMTP_USER.
  */
@@ -28,6 +32,8 @@ type SendRequest = { from: string; to: string[]; raw: string }
 const MAX_RECIPIENTS = 50
 const MAX_BYTES = 25 * 1024 * 1024
 const MAX_SKEW_SECONDS = 300
+// Waits before attempts 2 and 3 (wall time; doesn't count towards the CPU limit)
+const RETRY_DELAYS_MS = [1_000, 3_000]
 const EMAIL = /^[^\s@<>,;"]+@[^\s@<>,;"]+\.[a-z]{2,}$/i
 
 const json = (body: unknown, status = 200) =>
@@ -62,7 +68,18 @@ async function signatureValid(secret: string, timestamp: string, body: string, s
   )
 }
 
-class SmtpError extends Error {}
+class SmtpError extends Error {
+  constructor(
+    message: string,
+    readonly code?: number,
+  ) {
+    super(message)
+  }
+}
+
+// Thrown once the end of the email has been sent: Gmail may already have accepted it, so a
+// retry could deliver it twice. Never retried.
+class AfterDataError extends Error {}
 
 // Minimal SMTP client over implicit TLS (port 465): EHLO, AUTH PLAIN, MAIL, RCPT, DATA, QUIT.
 async function sendSmtp(env: Env, from: string, to: string[], message: string) {
@@ -82,7 +99,8 @@ async function sendSmtp(env: Env, from: string, to: string[], message: string) {
         const text = lines.slice(0, done + 1).join(' | ')
         buffer = lines.slice(done + 1).join('\r\n')
         const code = Number(lines[done].slice(0, 3))
-        if (!expected.includes(code)) throw new SmtpError(`SMTP ${code}: ${text.slice(0, 300)}`)
+        if (!expected.includes(code))
+          throw new SmtpError(`SMTP ${code}: ${text.slice(0, 300)}`, code)
         return code
       }
       const { value, done: closed } = await reader.read()
@@ -111,9 +129,13 @@ async function sendSmtp(env: Env, from: string, to: string[], message: string) {
     let body = message.replace(/\r?\n/g, '\r\n').replace(/^\./gm, '..')
     if (!body.endsWith('\r\n')) body += '\r\n'
     await writer.write(Uint8Array.from(body, (c) => c.charCodeAt(0)))
-    await send('.')
-    await reply([250])
-    await send('QUIT')
+    try {
+      await send('.')
+      await reply([250])
+    } catch (error) {
+      throw new AfterDataError(`Gmail's reply to the finished email: ${(error as Error).message}`)
+    }
+    await send('QUIT').catch(() => {})
   } finally {
     await socket.close().catch(() => {})
   }
@@ -158,13 +180,37 @@ export default {
     }
     if (message.length > MAX_BYTES) return json({ error: 'Email too large' }, 413)
 
-    try {
-      await sendSmtp(env, data.from, to, message)
-      return json({ ok: true, accepted: to })
-    } catch (error) {
-      const text =
-        error instanceof SmtpError ? error.message : `Relay error: ${(error as Error).message}`
-      return json({ error: text.slice(0, 400) }, 502)
+    // Gmail sometimes refuses the login (535) or drops the connection from Cloudflare's
+    // servers, and accepts the same login moments later. Each attempt is a fresh connection.
+    let lastError: Error = new Error('not sent')
+    for (let attempt = 1; attempt <= RETRY_DELAYS_MS.length + 1; attempt++) {
+      try {
+        await sendSmtp(env, data.from, to, message)
+        if (attempt > 1) console.log(`sent on attempt ${attempt}`)
+        return json({ ok: true, accepted: to, attempts: attempt })
+      } catch (error) {
+        lastError = error as Error
+        const retry = isRetryable(lastError) && attempt <= RETRY_DELAYS_MS.length
+        console.log(
+          `attempt ${attempt} failed (${lastError.message.slice(0, 120)}); retry: ${retry}`,
+        )
+        if (!retry) break
+        await new Promise((resolve) => setTimeout(resolve, RETRY_DELAYS_MS[attempt - 1]))
+      }
     }
+    const text =
+      lastError instanceof SmtpError || lastError instanceof AfterDataError
+        ? lastError.message
+        : `Relay error: ${lastError.message}`
+    return json({ error: text.slice(0, 400) }, 502)
   },
+}
+
+// Retried: refused login (535), temporary SMTP errors (4xx), lost or failed connections.
+// Not retried: permanent errors (other 5xx, e.g. a bad address) and anything after the
+// email's end was sent, so an email is never delivered twice.
+function isRetryable(error: Error) {
+  if (error instanceof AfterDataError) return false
+  if (error instanceof SmtpError && error.code) return error.code === 535 || error.code < 500
+  return true
 }
