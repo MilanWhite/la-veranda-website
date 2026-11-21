@@ -1,3 +1,4 @@
+import { type PostgresAdapter, sql } from '@payloadcms/db-postgres'
 import { APIError, type CollectionAfterDeleteHook, type CollectionBeforeChangeHook } from 'payload'
 
 import type { EventRequest } from '../../payload-types'
@@ -26,15 +27,12 @@ export const assignRequestNumber: CollectionBeforeChangeHook = async ({
   req,
 }) => {
   if (operation === 'create') {
-    const last = await req.payload.find({
-      collection: 'event-requests',
-      sort: '-requestNumber',
-      limit: 1,
-      depth: 0,
-      req,
-      overrideAccess: true,
-    })
-    data.requestNumber = Math.max(FIRST_REQUEST_NUMBER, (last.docs[0]?.requestNumber ?? 0) + 1)
+    // From a database counter that only goes up (see the request_number_sequence migration),
+    // so a deleted request's number is never reused.
+    const db = req.payload.db as unknown as PostgresAdapter
+    const result = await db.drizzle.execute(sql`SELECT nextval('event_request_number_seq') AS n`)
+    const next = Number((result as unknown as { rows: { n: string }[] }).rows[0]?.n)
+    data.requestNumber = Math.max(FIRST_REQUEST_NUMBER, next)
     data.status = 'pending'
     data.emails = { customer: 'not_sent', owner: 'not_sent' }
     data.calendar = { status: 'not_synced' }
@@ -158,6 +156,8 @@ export const syncCalendarOnChange: CollectionBeforeChangeHook = async ({
     ...(data as EventRequest),
     customer: { ...originalDoc?.customer, ...data.customer },
     event: { ...originalDoc?.event, ...data.event },
+    // Always the saved calendar event, never one sent with the edit
+    calendar: originalDoc?.calendar,
   } as EventRequest
 
   const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL
@@ -168,7 +168,7 @@ export const syncCalendarOnChange: CollectionBeforeChangeHook = async ({
           ? `${serverUrl}/admin/collections/event-requests/${originalDoc?.id}`
           : undefined,
       })
-    : await removeCalendarEvent(calendarId, originalDoc?.id)
+    : await removeCalendarEvent(calendarId, originalDoc?.calendar?.eventId)
 
   data.calendar = {
     status: result.status,
@@ -315,7 +315,7 @@ export const removeCalendarOnDelete: CollectionAfterDeleteHook = async ({ doc, r
     overrideAccess: true,
   })
   const calendarId = settings.internal?.googleCalendarId || process.env.GOOGLE_CALENDAR_ID
-  const result = await removeCalendarEvent(calendarId, request.id)
+  const result = await removeCalendarEvent(calendarId, request.calendar?.eventId)
   if (result.status === 'failed') {
     req.payload.logger.error(
       `Event request #${request.requestNumber} deleted, but its calendar event could not be removed: ${result.error}`,
