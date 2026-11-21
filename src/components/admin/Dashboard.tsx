@@ -44,11 +44,46 @@ export async function Dashboard(props: AdminViewServerProps) {
     depth: 0,
   })
 
+  // Active requests whose confirmation or restaurant email didn't go out
+  const failedEmails = await payload.find({
+    collection: 'event-requests',
+    where: {
+      and: [
+        { status: { in: ['pending', 'approved'] } },
+        {
+          or: [
+            { 'emails.customer': { equals: 'failed' } },
+            { 'emails.owner': { equals: 'failed' } },
+          ],
+        },
+      ],
+    },
+    sort: '-createdAt',
+    limit: 10,
+    depth: 0,
+  })
+
   const collectionConfig = payload.collections['event-requests'].config
 
   return (
     <div className="lvd">
       <div className="lvd-main">
+        {failedEmails.totalDocs > 0 && (
+          <div className="lvd-alert" role="alert">
+            <strong>
+              {failedEmails.totalDocs === 1
+                ? 'An email for 1 request was not sent:'
+                : `Emails for ${failedEmails.totalDocs} requests were not sent:`}
+            </strong>{' '}
+            {failedEmails.docs.map((r: EventRequest, i) => (
+              <span key={r.id}>
+                {i > 0 && ', '}
+                <Link href={`${REQUESTS}/${r.id}`}>#{r.requestNumber}</Link>
+              </span>
+            ))}
+            . Open the request to see why, then use “Resend emails” in its ⋯ menu.
+          </div>
+        )}
         {/* Always opens pending-first (statusOrder) unless a sort was picked on this page,
             whatever sort was last used on the Event Requests page. */}
         <ListView
