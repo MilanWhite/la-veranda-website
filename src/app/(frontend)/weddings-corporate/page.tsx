@@ -73,25 +73,6 @@ const menuCourses = [
   },
 ]
 
-const steps = [
-  {
-    title: 'Send Your Request',
-    text: 'Tell us your date, times, number of guests and menu choices. Not sure yet? Leave them to be decided.',
-  },
-  {
-    title: 'Receive Your Quote',
-    text: 'We review your request and email you a quotation. No payment is required until you’re ready.',
-  },
-  {
-    title: 'Hold Your Date',
-    text: 'A non-refundable deposit secures your date. We then fine-tune the details with you.',
-  },
-  {
-    title: 'Celebrate',
-    text: 'Enjoy your day with your guests. Our team takes care of the food, the service and the room.',
-  },
-]
-
 const otherOccasions = ['Communions', 'Confirmations', 'Baptisms', 'Sweet 16s', 'Birthdays']
 
 export default async function WeddingsCorporatePage() {
@@ -234,25 +215,9 @@ export default async function WeddingsCorporatePage() {
         </div>
       </section>
 
-      {/* How it works */}
-      <section className="section section-alt">
-        <div className="container">
-          <h2 className="section-title">How It Works</h2>
-          <hr className="divider" />
-          <ol className="steps">
-            {steps.map(({ title, text }) => (
-              <li key={title}>
-                <h3>{title}</h3>
-                <p>{text}</p>
-              </li>
-            ))}
-          </ol>
-        </div>
-      </section>
-
-      {/* Photos */}
+      {/* Photos (shaded, so the plain and shaded sections keep alternating) */}
       {photos.length > 0 && (
-        <section className="section">
+        <section className="section section-alt">
           <div className="container">
             <h2 className="section-title">Moments at La Veranda</h2>
             <hr className="divider" />
