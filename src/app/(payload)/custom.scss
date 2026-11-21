@@ -113,7 +113,6 @@
 
 .lv-brand-home {
   color: var(--theme-text);
-  font-weight: 600;
 }
 
 // The logo above is the way home, so the sidebar's collapse button and the cut-off mark in
@@ -127,6 +126,45 @@
 
 .step-nav__home {
   display: none !important;
+}
+
+// Phones: the top bar shows a "← Event Requests" back link instead of the whole breadcrumb
+// trail (which pushed the profile picture off the screen). Pages with nowhere to go back to
+// (Dashboard, lists) show just the page name, or nothing.
+@media (max-width: 767px) {
+  .app-header__step-nav-wrapper {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .app-header .step-nav {
+    min-width: 0;
+
+    > span:not(.step-nav__last) {
+      display: none;
+    }
+
+    &:has(> a:not(.step-nav__home)) .step-nav__last {
+      display: none;
+    }
+
+    > .step-nav__last {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    > a:not(.step-nav__home) {
+      font-weight: 600;
+      text-decoration: none;
+
+      &::before {
+        content: '←';
+        margin-right: 6px;
+      }
+    }
+  }
 }
 
 // Edit / API tabs above documents aren't needed anywhere
@@ -236,6 +274,75 @@ body:has(.collection-edit--event-requests) .doc-header {
 
   .tabs-field__tabs-wrap {
     margin-bottom: 28px;
+  }
+}
+
+// Phones: title (number, name, status, date) on the left with Save and ⋯ beside it; the
+// request's actions (Approve / Decline / Cancel, View PDF, Reply) in one row underneath.
+@media (max-width: 767px) {
+  .collection-edit--event-requests {
+    // Scrolls away with the page. (Payload pins this bar, partly cut off at the top: fine for
+    // its one-line desktop bar, but on a phone it hid the title and took up the screen.)
+    .doc-controls {
+      position: static;
+    }
+
+    .doc-controls__wrapper {
+      padding-top: 0;
+    }
+
+    .doc-controls__controls-wrapper {
+      display: grid;
+      grid-template-areas:
+        'title save more'
+        'actions actions actions';
+      grid-template-columns: minmax(0, 1fr) auto auto;
+      align-items: start;
+      gap: 14px 8px;
+      // Room below Payload's divider line (above the title), not above it
+      padding: 16px var(--gutter-h, 16px) 0;
+    }
+
+    .doc-controls__controls,
+    .lv-reqbar {
+      display: contents;
+    }
+
+    // Payload's empty spacer after the buttons would become an extra row here
+    .doc-controls__controls::after {
+      display: none;
+    }
+
+    // The tabs still swipe sideways, without a grey scrollbar under them
+    .tabs-field__tabs-wrap {
+      scrollbar-width: none;
+
+      &::-webkit-scrollbar {
+        display: none;
+      }
+    }
+
+    .lv-reqbar-title {
+      grid-area: title;
+    }
+
+    .form-submit {
+      grid-area: save;
+    }
+
+    .doc-controls__popup {
+      grid-area: more;
+    }
+
+    // Slightly tighter, so a pending request's four buttons also fit on one line
+    .lv-reqbar-actions {
+      grid-area: actions;
+      gap: 6px;
+
+      .lv-act {
+        padding: 0 12px;
+      }
+    }
   }
 }
 
@@ -356,56 +463,138 @@ body:has(.collection-edit--event-requests) .doc-header {
   min-width: 0;
 }
 
-// Phones: request cards instead of the wide table
-.lvd-cards {
-  display: none;
-}
-
+// Phones: Coming up sits right under the requests (Payload leaves 80px under a list) and is
+// only as tall as its events; the page ends with it.
 @media (max-width: 767px) {
   .lvd {
     align-content: start;
-  }
+    min-height: 0;
 
-  .lvd-main > .collection-list {
-    display: none;
-  }
-
-  .lvd-cards {
-    display: block;
-    padding: 20px var(--gutter-h, 16px) 28px;
-
-    ul {
-      display: grid;
-      gap: 10px;
-      margin: 0;
-      padding: 0;
-      list-style: none;
+    .collection-list {
+      margin-bottom: 24px;
     }
 
-    li a {
+    .lvd-aside {
+      padding: 20px var(--gutter-h, 16px) 24px;
+    }
+  }
+}
+
+// Phones: each event request (Dashboard and Event Requests list) shows as a card instead of
+// a wide table row: "#4834 Name [Status]", then the event type, then date · guests. It's the
+// same list underneath, so search, filters, sorting and pages still work. The whole card
+// opens the request.
+@media (max-width: 767px) {
+  .collection-list--event-requests {
+    // Cards fit the page width, inside the same side margins as the search bar. (On phones
+    // Payload shifts the table into the margins and stretches it to the screen, to scroll it.)
+    .table-wrap,
+    .table {
+      inset-inline-start: 0;
+      width: auto;
+      margin: 0;
+      padding: 0;
+      overflow: visible;
+    }
+
+    table,
+    tbody {
+      display: block;
+    }
+
+    // No row checkboxes on cards, so no "select rows" bar pinned to the bottom either
+    thead,
+    td.cell-_select,
+    .collection-list__list-selection {
+      display: none;
+    }
+
+    tbody tr {
+      position: relative;
       display: flex;
-      flex-direction: column;
-      gap: 2px;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 2px 8px;
+      margin-bottom: 10px;
       padding: 12px 14px;
       border: 1px solid var(--theme-elevation-150);
       border-radius: 6px;
+      background: var(--theme-bg) !important;
       color: var(--theme-elevation-600);
       font-size: 14px;
-      text-decoration: none;
     }
-  }
 
-  .lvd-card-top {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    margin-bottom: 2px;
-    color: var(--theme-text);
-    font-size: 15px;
+    // (Payload gives table cells a 150px minimum width)
+    tbody td {
+      flex-basis: 100%;
+      order: 10;
+      min-width: 0;
+      max-width: none;
+      padding: 0 !important;
+      border: 0 !important;
+      background: none !important;
+      white-space: normal;
+    }
 
-    strong {
+    td.cell-requestNumber,
+    td.cell-customerName {
+      flex-basis: auto;
+      order: 1;
+      color: var(--theme-text);
+      font-size: 15px;
       font-weight: 600;
+    }
+
+    td.cell-customerName {
+      flex: 1;
+      order: 2;
+    }
+
+    td.cell-status {
+      flex-basis: auto;
+      order: 3;
+    }
+
+    td.cell-occasion {
+      order: 4;
+    }
+
+    td.cell-startsOn,
+    td.cell-guests {
+      flex-basis: auto;
+      order: 5;
+    }
+
+    td.cell-guests {
+      order: 6;
+
+      span::before {
+        content: '· ';
+      }
+    }
+
+    // Not a positioning box or its own layer (Payload makes every cell both), so the link
+    // below can cover the whole card rather than just the number
+    td.cell-requestNumber {
+      position: static;
+      z-index: auto;
+    }
+
+    td.cell-requestNumber a {
+      color: inherit;
+      text-decoration: none;
+
+      &::before {
+        content: '#';
+      }
+
+      // Stretches the link over the whole card (above the other cells)
+      &::after {
+        position: absolute;
+        z-index: 2;
+        inset: 0;
+        content: '';
+      }
     }
   }
 }

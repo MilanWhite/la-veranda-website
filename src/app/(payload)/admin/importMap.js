@@ -1,4 +1,5 @@
 import { StatusCell as StatusCell_4da1f90de99340c8531cff72a46c36b2 } from '../../../components/admin/StatusCell'
+import { DateCell as DateCell_093a014748f480a2661135ac2d830549 } from '../../../components/admin/DateCell'
 import { EventRequestOverview as EventRequestOverview_96c6dac53c650a682e4c8ef2f59c75f1 } from '../../../components/admin/EventRequestOverview'
 import { RowLabel as RowLabel_a22f15833f5c099d83eec5874403c04c } from '../../../components/admin/RowLabel'
 import { RequestHeader as RequestHeader_f9b296867dd30e721a1a6d7a1616af7e } from '../../../components/admin/RequestHeader'
@@ -14,6 +15,7 @@ import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } f
 /** @type import('payload').ImportMap */
 export const importMap = {
   "/components/admin/StatusCell#StatusCell": StatusCell_4da1f90de99340c8531cff72a46c36b2,
+  "/components/admin/DateCell#DateCell": DateCell_093a014748f480a2661135ac2d830549,
   "/components/admin/EventRequestOverview#EventRequestOverview": EventRequestOverview_96c6dac53c650a682e4c8ef2f59c75f1,
   "/components/admin/RowLabel#RowLabel": RowLabel_a22f15833f5c099d83eec5874403c04c,
   "/components/admin/RequestHeader#RequestHeader": RequestHeader_f9b296867dd30e721a1a6d7a1616af7e,
