@@ -118,12 +118,17 @@ export async function sendContactReply(
     .split('\n')
     .map((line) => `> ${line}`)
     .join('\n')}`
+  // The quote is marked up the way Gmail marks its own ("gmail_quote"), so Gmail folds it
+  // behind the "•••" button like any reply; other email apps show it underneath as usual.
   const html = `<div style="font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.6;color:#222">
   <div>${escapeHtml(message).replace(/\n/g, '<br>')}</div>
-  <p style="margin:24px 0 6px;color:#666;font-size:13px">${escapeHtml(quote.header)}</p>
-  <blockquote style="margin:0;padding:4px 0 4px 12px;border-left:3px solid #ccc;color:#555">${escapeHtml(
-    quote.text,
-  ).replace(/\n/g, '<br>')}</blockquote>
+  <br>
+  <div class="gmail_quote">
+    <div class="gmail_attr" style="margin:0 0 6px;color:#666;font-size:13px">${escapeHtml(quote.header)}<br></div>
+    <blockquote class="gmail_quote" style="margin:0 0 0 0.8ex;padding-left:1ex;border-left:1px solid #ccc;color:#555">${escapeHtml(
+      quote.text,
+    ).replace(/\n/g, '<br>')}</blockquote>
+  </div>
 </div>`
 
   await payload.sendEmail({

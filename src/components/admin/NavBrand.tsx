@@ -13,7 +13,8 @@ export function NavBrand() {
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={logoDark.src} alt="La Veranda" />
       </Link>
-      <Link href="/admin" className="lv-brand-home">
+      {/* nav__link: same text size as the other sidebar links (they grow on phones) */}
+      <Link href="/admin" className="nav__link lv-brand-home">
         Dashboard
       </Link>
     </div>

@@ -1,15 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import {
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-  useSyncExternalStore,
-} from 'react'
-import { FaChevronLeft, FaChevronRight, FaTimes } from 'react-icons/fa'
+import { useLayoutEffect, useRef, useState, useSyncExternalStore } from 'react'
 
 export type GalleryCategory = 'food' | 'events' | 'restaurant'
 export type GalleryImage = {
@@ -97,64 +89,40 @@ function toColumns(images: GalleryImage[], count: number) {
     if (!improved) break
   }
   return {
-    columns: cols.map((c) => c.map((index) => ({ img: images[index], index }))),
+    columns: cols.map((c) => c.map((index) => images[index])),
     // how much the shortest column must stretch to reach the tallest (0 = already flat)
     stretch: Math.min(...heights) > 0 ? spread() / Math.min(...heights) : Infinity,
   }
 }
 
-// Filter tabs + photo collage; clicking a photo opens it full screen.
-// Keyboard: ←/→ move between tabs; in the viewer Esc closes and ←/→ browse.
+// Filter tabs + photo collage. Photos zoom in slowly on hover; they don't open.
+// Keyboard: ←/→ move between tabs.
 export function GalleryGrid({ images: allImages }: { images: GalleryImage[] }) {
   const [filter, setFilter] = useState<'all' | GalleryCategory>('all')
-  const [open, setOpen] = useState<number | null>(null)
-  const dialogRef = useRef<HTMLDialogElement>(null)
-  const triggerRef = useRef<HTMLButtonElement | null>(null)
   const tabRefs = useRef<Record<string, HTMLButtonElement | null>>({})
-  const [indicator, setIndicator] = useState({ left: 0, width: 0 })
+  const [indicator, setIndicator] = useState({ left: 0, top: 0, width: 0 })
 
   const images = filter === 'all' ? allImages : allImages.filter((i) => i.category === filter)
   const visibleTabs = tabs.filter(
     (t) => t.value === 'all' || allImages.some((i) => i.category === t.value),
   )
 
-  // Slide the teal underline under the active tab (and keep it there on resize).
+  // Slide the teal underline under the active tab (and keep it there on resize). Uses the
+  // tab's own row too, so it stays under the right word if the tabs wrap onto two lines.
   useLayoutEffect(() => {
     const place = () => {
       const tab = tabRefs.current[filter]
-      if (tab) setIndicator({ left: tab.offsetLeft, width: tab.offsetWidth })
+      if (tab)
+        setIndicator({
+          left: tab.offsetLeft,
+          top: tab.offsetTop + tab.offsetHeight - 1,
+          width: tab.offsetWidth,
+        })
     }
     place()
     window.addEventListener('resize', place)
     return () => window.removeEventListener('resize', place)
   }, [filter])
-
-  const close = useCallback(() => setOpen(null), [])
-  const step = useCallback(
-    (delta: number) =>
-      setOpen((i) => (i === null ? i : (i + delta + images.length) % images.length)),
-    [images.length],
-  )
-
-  useEffect(() => {
-    const dialog = dialogRef.current
-    if (!dialog) return
-    if (open !== null && !dialog.open) dialog.showModal()
-    if (open === null && dialog.open) {
-      dialog.close()
-      triggerRef.current?.focus()
-    }
-  }, [open])
-
-  useEffect(() => {
-    if (open === null) return
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'ArrowRight') step(1)
-      if (e.key === 'ArrowLeft') step(-1)
-    }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [open, step])
 
   const onTabKey = (e: React.KeyboardEvent, i: number) => {
     if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return
@@ -167,7 +135,6 @@ export function GalleryGrid({ images: allImages }: { images: GalleryImage[] }) {
   // Always 3 columns like the old site (2 on phones); only a category with fewer photos
   // than that uses fewer.
   const columnCount = Math.min(useColumnCount(), Math.max(1, images.length))
-  const current = open === null ? null : images[open]
   // End on a flat line only when that crops photos a little; otherwise (e.g. a category with
   // a few tall photos) the columns simply end at different heights, like the old site.
   const layout = toColumns(images, columnCount)
@@ -199,7 +166,10 @@ export function GalleryGrid({ images: allImages }: { images: GalleryImage[] }) {
           <span
             className="gallery-tabs-indicator"
             aria-hidden
-            style={{ transform: `translateX(${indicator.left}px)`, width: indicator.width }}
+            style={{
+              transform: `translate(${indicator.left}px, ${indicator.top}px)`,
+              width: indicator.width,
+            }}
           />
         </div>
       )}
@@ -212,17 +182,9 @@ export function GalleryGrid({ images: allImages }: { images: GalleryImage[] }) {
       >
         {layout.columns.map((column, c) => (
           <ul key={`${filter}-${c}`} className="masonry-column">
-            {column.map(({ img, index }) => (
+            {column.map((img) => (
               <li key={img.url}>
-                <button
-                  type="button"
-                  className="gallery-thumb"
-                  onClick={(e) => {
-                    triggerRef.current = e.currentTarget
-                    setOpen(index)
-                  }}
-                  aria-label={`Open photo: ${img.alt}`}
-                >
+                <div className="gallery-thumb">
                   <Image
                     src={img.url}
                     alt={img.alt}
@@ -230,61 +192,13 @@ export function GalleryGrid({ images: allImages }: { images: GalleryImage[] }) {
                     height={img.height}
                     sizes="(max-width: 699px) 50vw, 33vw"
                   />
-                </button>
+                </div>
               </li>
             ))}
           </ul>
         ))}
       </div>
 
-      <dialog
-        ref={dialogRef}
-        className="lightbox"
-        aria-label="Photo viewer"
-        onClose={close}
-        onClick={(e) => {
-          if (e.target === e.currentTarget) close()
-        }}
-      >
-        {current && (
-          <>
-            <figure>
-              <Image
-                src={current.url}
-                alt={current.alt}
-                width={current.width}
-                height={current.height}
-                sizes="90vw"
-              />
-              <figcaption>
-                {current.alt}{' '}
-                <span>
-                  ({(open ?? 0) + 1} / {images.length})
-                </span>
-              </figcaption>
-            </figure>
-            <button type="button" className="lightbox-close" onClick={close} aria-label="Close">
-              <FaTimes />
-            </button>
-            <button
-              type="button"
-              className="lightbox-prev"
-              onClick={() => step(-1)}
-              aria-label="Previous photo"
-            >
-              <FaChevronLeft />
-            </button>
-            <button
-              type="button"
-              className="lightbox-next"
-              onClick={() => step(1)}
-              aria-label="Next photo"
-            >
-              <FaChevronRight />
-            </button>
-          </>
-        )}
-      </dialog>
     </>
   )
 }

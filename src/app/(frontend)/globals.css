@@ -51,9 +51,12 @@ a {
   text-decoration: none;
 }
 
+/* Images can't be dragged around with the mouse (in every browser). Clicks, hovers and swipes
+   go to the link, tile or carousel around them, which is where those are handled. */
 img {
   max-width: 100%;
   height: auto;
+  pointer-events: none;
 }
 
 /* Layout */
@@ -230,6 +233,26 @@ select {
   background-position: right 18px center;
   background-size: 12px 8px;
   cursor: pointer;
+}
+
+/* iPhone Safari draws date and time boxes its own way: taller, wider than their column and
+   with centred text. Plain boxes there, like the others. (iOS-only query; other browsers keep
+   their calendar and clock icons.) */
+@supports (-webkit-touch-callout: none) {
+  input[type='date'],
+  input[type='time'] {
+    -webkit-appearance: none;
+    appearance: none;
+    display: block;
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  input::-webkit-date-and-time-value {
+    min-height: 1.2em;
+    margin: 0;
+    text-align: left;
+  }
 }
 
 select option {
@@ -1087,9 +1110,22 @@ label {
   outline-offset: 2px;
 }
 
+/* Phones: smaller tabs, so all four usually fit on one line */
+@media (max-width: 600px) {
+  .gallery-tabs {
+    gap: 0 16px;
+  }
+
+  .gallery-tabs button {
+    font-size: 13px;
+    letter-spacing: 1.5px;
+  }
+}
+
+/* Placed by GalleryGrid under the active tab (left and top), even when the tabs wrap */
 .gallery-tabs-indicator {
   position: absolute;
-  bottom: -1px;
+  top: 0;
   left: 0;
   height: 2px;
   background: var(--accent);
@@ -1143,8 +1179,6 @@ label {
   width: 100%;
   padding: 0;
   border: 0;
-  background: none;
-  cursor: zoom-in;
   overflow: hidden;
 }
 
@@ -1153,8 +1187,7 @@ label {
   transition: transform 0.7s ease-in-out;
 }
 
-.gallery-thumb:hover img,
-.gallery-thumb:focus-visible img {
+.gallery-thumb:hover img {
   transform: scale(1.1);
 }
 
@@ -1162,88 +1195,6 @@ label {
   .gallery-thumb img {
     transition: none;
   }
-}
-
-.gallery-thumb:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-}
-
-.lightbox {
-  width: 100vw;
-  max-width: 100vw;
-  height: 100vh;
-  max-height: 100vh;
-  margin: 0;
-  padding: 0;
-  border: 0;
-  background: rgba(0, 0, 0, 0.94);
-  color: var(--white);
-}
-
-.lightbox::backdrop {
-  background: rgba(0, 0, 0, 0.8);
-}
-
-.lightbox figure {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  margin: 0;
-  padding: 50px 60px;
-}
-
-.lightbox figure img {
-  width: auto;
-  max-width: 100%;
-  max-height: calc(100vh - 140px);
-  object-fit: contain;
-}
-
-.lightbox figcaption {
-  margin-top: 12px;
-  font-size: 15px;
-  text-align: center;
-}
-
-.lightbox figcaption span {
-  opacity: 0.6;
-}
-
-.lightbox button {
-  position: absolute;
-  padding: 12px;
-  border: 0;
-  background: none;
-  color: var(--white);
-  font-size: 26px;
-  cursor: pointer;
-}
-
-.lightbox button:hover,
-.lightbox button:focus-visible {
-  color: var(--accent);
-}
-
-.lightbox-close {
-  top: 8px;
-  right: 8px;
-}
-
-.lightbox-prev,
-.lightbox-next {
-  top: 50%;
-  transform: translateY(-50%);
-}
-
-.lightbox-prev {
-  left: 4px;
-}
-
-.lightbox-next {
-  right: 4px;
 }
 
 /* Specials */
@@ -1382,6 +1333,11 @@ label {
   gap: 20px;
 }
 
+/* Let fields shrink to their column (some phone date/time boxes are wider by default) */
+.form-grid > * {
+  min-width: 0;
+}
+
 @media (min-width: 600px) {
   .form-grid {
     grid-template-columns: 1fr 1fr;
@@ -1411,7 +1367,9 @@ label {
   border-color: #333;
 }
 
+/* Block, so there's no extra baseline gap under the box (keeps spacing below it even) */
 .form-field textarea {
+  display: block;
   resize: vertical;
 }
 
@@ -1430,6 +1388,7 @@ label {
   margin: 20px 0 0;
 }
 
+/* Same space above and below the spam check (and above the button without it) */
 .contact-form button[type='submit'] {
   margin-top: 24px;
 }
@@ -1523,33 +1482,6 @@ label {
 .highlight-icon {
   color: var(--accent);
   font-size: 30px;
-}
-
-/* How it works: four plain columns, a thin line above each, the way the steps read left to
-   right. No icons, numbers or colour. */
-.steps {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
-  gap: 40px clamp(24px, 3vw, 40px);
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.steps li {
-  padding-top: 24px;
-  border-top: 1px solid var(--line);
-}
-
-.steps h3 {
-  margin: 0 0 12px;
-  font-size: 24px;
-}
-
-.steps p {
-  margin: 0;
-  font-size: 17px;
-  opacity: 0.85;
 }
 
 /* Event menu: the three courses in order, laid out like the Specials cards with smaller
@@ -1704,7 +1636,7 @@ label {
 }
 
 .pricing-notes {
-  margin: 0 0 24px;
+  margin: 0;
   padding: 20px 24px;
   border: 1px solid var(--line);
   background: var(--black-alt);
@@ -1720,12 +1652,14 @@ label {
   margin-bottom: 6px;
 }
 
+/* The spam check sits evenly between what's above it and the send button */
 .turnstile {
-  margin-bottom: 16px;
+  margin-top: 24px;
+  line-height: 0;
 }
 
 .event-form button[type='submit'] {
-  margin-top: 8px;
+  margin-top: 24px;
 }
 
 .event-form button:disabled {
@@ -1792,7 +1726,10 @@ label {
   border-color: #b3261e;
 }
 
+/* The last section (Notes) runs straight into Pricing & Notes, with the same gap as below */
 .paper .form-section:last-of-type {
+  margin-bottom: 24px;
+  padding-bottom: 0;
   border-bottom: 0;
 }
 
