@@ -13,8 +13,8 @@ import {
 // "Let's Talk" contact messages as one email conversation. When a visitor writes, they get a
 // copy of their message ("we received it"), Bcc'd to the restaurant's mailbox (booking@), so
 // both sides start from the same email. Replies from the admin, from Gmail or from the
-// visitor all thread onto it (In-Reply-To/References). Each admin reply also quotes the
-// original message underneath, like an email app does.
+// visitor all thread onto it (In-Reply-To/References). The admin shows the original message
+// next to the reply box (quotedOriginal); the email itself doesn't repeat it.
 
 // Each conversation needs its own subject: Gmail groups emails with the same subject into one
 // thread, which would merge different visitors' conversations in the restaurant's mailbox.
@@ -106,7 +106,6 @@ export async function sendContactReply(
     depth: 0,
     overrideAccess: true,
   })
-  const quote = quotedOriginal(m)
   // The visitor's first email, then every earlier reply: one conversation
   const earlier = [
     contactConfirmationId(m),
@@ -114,22 +113,11 @@ export async function sendContactReply(
   ]
   const messageId = newMessageId()
 
-  const text = `${message}\n\n${quote.header}\n${quote.text
-    .split('\n')
-    .map((line) => `> ${line}`)
-    .join('\n')}`
-  // The quote is marked up the way Gmail marks its own ("gmail_quote"), so Gmail folds it
-  // behind the "•••" button like any reply; other email apps show it underneath as usual.
-  const html = `<div style="font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.6;color:#222">
-  <div>${escapeHtml(message).replace(/\n/g, '<br>')}</div>
-  <br>
-  <div class="gmail_quote">
-    <div class="gmail_attr" style="margin:0 0 6px;color:#666;font-size:13px">${escapeHtml(quote.header)}<br></div>
-    <blockquote class="gmail_quote" style="margin:0 0 0 0.8ex;padding-left:1ex;border-left:1px solid #ccc;color:#555">${escapeHtml(
-      quote.text,
-    ).replace(/\n/g, '<br>')}</blockquote>
-  </div>
-</div>`
+  // No quote of the visitor's message: it's already the first email of this conversation
+  // (their copy), so email apps show it just above the reply.
+  const html = `<div style="font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.6;color:#222">${escapeHtml(
+    message,
+  ).replace(/\n/g, '<br>')}</div>`
 
   await payload.sendEmail({
     to: m.email,
@@ -138,7 +126,7 @@ export async function sendContactReply(
     messageId,
     inReplyTo: earlier.at(-1),
     references: earlier,
-    text,
+    text: message,
     html,
   })
 

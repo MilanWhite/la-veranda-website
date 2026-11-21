@@ -4,8 +4,8 @@ import { useRouter } from 'next/navigation'
 import { useRef, useState } from 'react'
 
 // "Reply" on a contact message: write the answer in a window and send it from the admin.
-// The website emails it as the restaurant with the visitor's original message quoted
-// underneath, so they see what they're being answered about.
+// The website emails it as the restaurant, in the same conversation as the visitor's message
+// (shown here while writing; the email doesn't repeat it).
 export function ContactReplyButton({
   id,
   firstName,
@@ -74,8 +74,8 @@ export function ContactReplyButton({
           <blockquote>{original.text}</blockquote>
         </div>
         <p className="lv-reply-hint">
-          Sent from the restaurant’s email with their message quoted underneath, as shown. A copy is
-          kept in its Sent mail and the message is marked handled.
+          Sent from the restaurant’s email as a reply in their conversation, right under their
+          message. A copy is kept in its Sent mail and the message is marked handled.
         </p>
         {error && (
           <p className="lv-msg lv-msg-error" role="alert">

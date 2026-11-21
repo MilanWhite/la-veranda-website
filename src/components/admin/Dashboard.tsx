@@ -5,12 +5,11 @@ import type { AdminViewServerProps } from 'payload'
 import { formatTime } from '@/lib/eventRequests/summary'
 import { ensureNavDefaults } from '@/lib/adminNav'
 import type { EventRequest } from '@/payload-types'
-import { StatusBadge } from './StatusBadge'
 
 // The admin home is a place to work, not a report: Payload's own Event Requests list in the
 // middle (same search, filters and columns as that page) and a full-height "Coming up"
-// panel on the right with the confirmed events. Phones get the requests as simple cards
-// instead of the wide table (which needed scrolling sideways to read one request).
+// panel on the right with the confirmed events. (On phones the list shows as cards: see
+// custom.scss.)
 
 const REQUESTS = '/admin/collections/event-requests'
 const TZ = 'America/Toronto'
@@ -23,7 +22,6 @@ const fmt = (opts: Intl.DateTimeFormatOptions) =>
   new Intl.DateTimeFormat('en-CA', { timeZone: 'UTC', ...opts })
 const weekday = fmt({ weekday: 'short' })
 const month = fmt({ month: 'short' })
-const shortDate = fmt({ weekday: 'short', month: 'short', day: 'numeric' })
 
 // "60 + 10 kids" → "60 adults, 10 kids"; "60" → "60 guests"
 function guestsLabel(guests?: string | null) {
@@ -44,14 +42,6 @@ export async function Dashboard(props: AdminViewServerProps) {
     },
     sort: 'startsOn',
     limit: 30,
-    depth: 0,
-  })
-
-  // For the phone cards: the same order as the list (pending first, then upcoming)
-  const recent = await payload.find({
-    collection: 'event-requests',
-    sort: 'statusOrder',
-    limit: 20,
     depth: 0,
   })
 
@@ -95,42 +85,6 @@ export async function Dashboard(props: AdminViewServerProps) {
             . Open the request to see why, then use “Resend emails” in its ⋯ menu.
           </div>
         )}
-        {/* Phones only (CSS): one card per request with the key facts */}
-        <div className="lvd-cards">
-          <div className="lvd-aside-head">
-            <h2>Event Requests</h2>
-            <Link href={REQUESTS}>Search &amp; filter</Link>
-          </div>
-          {recent.docs.length ? (
-            <ul>
-              {recent.docs.map((r: EventRequest) => (
-                <li key={r.id}>
-                  <Link href={`${REQUESTS}/${r.id}`}>
-                    <span className="lvd-card-top">
-                      <strong>
-                        #{r.requestNumber} {r.customerName}
-                      </strong>
-                      <StatusBadge status={r.status} />
-                    </span>
-                    <span>{r.occasion}</span>
-                    <span>
-                      {[
-                        r.startsOn && shortDate.format(parseYmd(r.startsOn)),
-                        formatTime(r.event?.startTime),
-                        guestsLabel(r.guests),
-                      ]
-                        .filter(Boolean)
-                        .join(' · ')}
-                    </span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="lvd-empty">No event requests yet.</p>
-          )}
-        </div>
-
         {/* Always opens pending-first (statusOrder) unless a sort was picked on this page,
             whatever sort was last used on the Event Requests page. */}
         <ListView

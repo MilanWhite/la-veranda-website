@@ -117,7 +117,11 @@ export const EventRequests: CollectionConfig = {
       label: 'Event date',
       type: 'text',
       index: true,
-      admin: { position: 'sidebar', ...readOnly },
+      admin: {
+        position: 'sidebar',
+        ...readOnly,
+        components: { Cell: '/components/admin/DateCell#DateCell' },
+      },
     },
     { name: 'occasion', label: 'Event type', type: 'text', admin: { hidden: true } },
     { name: 'guests', label: 'Guests', type: 'text', admin: { hidden: true } },
