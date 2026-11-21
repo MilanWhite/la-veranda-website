@@ -31,6 +31,27 @@ export function messageIdDomain() {
   return senderAddress().split('@')[1] || 'localhost'
 }
 
+const same = (a?: string | null, b?: string | null) =>
+  Boolean(a && b && a.trim().toLowerCase() === b.trim().toLowerCase())
+
+/**
+ * Splits the restaurant's notification addresses into the mailbox the site sends from
+ * (booking@) and any others. The sending mailbox is Bcc'd on the customer's email, so both
+ * sides share one conversation; other addresses get a separate notification.
+ */
+export function splitRestaurantRecipients(addresses: string[]) {
+  const sender = senderAddress()
+  return {
+    mailbox: addresses.some((a) => same(a, sender)) ? sender : null,
+    others: addresses.filter((a) => !same(a, sender)),
+  }
+}
+
+/** Reply-To, left out when it's the sending mailbox itself (From already says that). */
+export function replyToUnlessSender(address?: string | null) {
+  return address && !same(address, senderAddress()) ? address : undefined
+}
+
 const fromName = () => process.env.EMAIL_FROM_NAME || 'La Veranda Restaurant'
 
 export function emailAdapter() {

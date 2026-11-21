@@ -3,7 +3,8 @@
 import { getPayload } from 'payload'
 
 import config from '@/payload.config'
-import { escapeHtml, isEmailConfigured } from '@/lib/mail'
+import { sendContactConfirmation } from '@/lib/contactReplies'
+import type { ContactMessage } from '@/payload-types'
 import { verifyTurnstile } from '@/lib/turnstile'
 import { clientIp, isRateLimited } from '../lib/rateLimit'
 
@@ -68,8 +69,9 @@ export async function sendContactMessage(
   }
 
   const payload = await getPayload({ config })
+  let saved: ContactMessage
   try {
-    await payload.create({
+    saved = await payload.create({
       collection: 'contact-messages',
       data: { ...values, handled: false },
       overrideAccess: true,
@@ -83,34 +85,9 @@ export async function sendContactMessage(
     }
   }
 
-  await notifyRestaurant(payload, values).catch((error) =>
-    console.error('Contact form: email to restaurant failed', error),
+  // The visitor's copy, Bcc'd to the restaurant: one conversation for both
+  await sendContactConfirmation(payload, saved).catch((error) =>
+    console.error('Contact form: emails failed', error),
   )
   return { status: 'success' }
-}
-
-async function notifyRestaurant(
-  payload: Awaited<ReturnType<typeof getPayload>>,
-  v: Record<ContactField, string>,
-) {
-  if (!isEmailConfigured()) return
-  const settings = await payload.findGlobal({
-    slug: 'site-settings',
-    depth: 0,
-    overrideAccess: true,
-  })
-  const to = (settings.internal?.notificationEmails ?? []).map((e) => e.email).filter(Boolean)
-  if (!to.length && settings.email) to.push(settings.email)
-  if (!to.length) return
-  const name = [v.firstName, v.lastName].filter(Boolean).join(' ')
-  const row = (label: string, value: string) =>
-    value
-      ? `<tr><td style="padding:8px 12px;font-weight:bold;border-bottom:1px solid #e5e7eb">${label}</td><td style="padding:8px 12px;border-bottom:1px solid #e5e7eb">${escapeHtml(value).replace(/\n/g, '<br>')}</td></tr>`
-      : ''
-  await payload.sendEmail({
-    to: to.join(', '),
-    replyTo: v.email,
-    subject: `New message from ${name} (website contact form)`,
-    html: `<div style="font-family:Arial,sans-serif;font-size:15px;color:#333"><p>New message from the La Veranda website. Reply to this email to answer ${escapeHtml(name)} directly.</p><table style="border-collapse:collapse">${row('Name', name)}${row('Email', v.email)}${row('Phone', v.phone)}${row('Message', v.message)}</table></div>`,
-  })
 }
