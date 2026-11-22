@@ -18,14 +18,18 @@ import {
 
 // Each conversation needs its own subject: Gmail groups emails with the same subject into one
 // thread, which would merge different visitors' conversations in the restaurant's mailbox.
+// The full name and the day keep them apart (the same full name on the same day is almost
+// always the same person writing again).
 const day = (iso: string) =>
   new Intl.DateTimeFormat('en-CA', {
     month: 'short',
     day: 'numeric',
     timeZone: 'America/Toronto',
   }).format(new Date(iso))
-export const contactSubject = (m: Pick<ContactMessage, 'firstName' | 'createdAt'>) =>
-  `Your message to La Veranda (${m.firstName}, ${day(m.createdAt)})`
+const fullName = (m: Pick<ContactMessage, 'firstName' | 'lastName'>) =>
+  [m.firstName, m.lastName].filter(Boolean).join(' ')
+export const contactSubject = (m: Pick<ContactMessage, 'firstName' | 'lastName' | 'createdAt'>) =>
+  `Your message to La Veranda (${fullName(m)}, ${day(m.createdAt)})`
 
 const json = (body: unknown, status = 200) => Response.json(body, { status })
 
@@ -40,9 +44,36 @@ const row = (label: string, value?: string | null) =>
     ? `<tr><td style="padding:8px 12px;font-weight:bold;border-bottom:1px solid #e5e7eb;vertical-align:top">${label}</td><td style="padding:8px 12px;border-bottom:1px solid #e5e7eb">${escapeHtml(value).replace(/\n/g, '<br>')}</td></tr>`
     : ''
 
-/** Sent when the visitor writes: their copy, Bcc'd to the restaurant's mailbox. */
+type EmailStatus = 'sent' | 'failed' | 'skipped'
+
+/**
+ * Sent when the visitor writes: their copy, Bcc'd to the restaurant's mailbox, plus a
+ * notification to any other restaurant address. The result is saved on the message, so a
+ * failure shows in the admin inbox and on the dashboard. Never throws.
+ */
 export async function sendContactConfirmation(payload: Payload, m: ContactMessage) {
-  if (!isEmailConfigured()) return
+  let visitor: EmailStatus = 'skipped'
+  let restaurant: EmailStatus = 'skipped'
+  const errors: string[] = []
+  try {
+    if (isEmailConfigured()) {
+      ;({ visitor, restaurant } = await sendContactEmails(payload, m, errors))
+    }
+  } catch (error) {
+    errors.push((error as Error).message)
+  }
+  await payload
+    .update({
+      collection: 'contact-messages',
+      id: m.id,
+      overrideAccess: true,
+      data: { emails: { visitor, restaurant, error: errors.join(' | ') || null } },
+    })
+    .catch((error) => console.error('Contact form: could not save the email result', error))
+  return { visitor, restaurant, errors }
+}
+
+async function sendContactEmails(payload: Payload, m: ContactMessage, errors: string[]) {
   const settings = await payload.findGlobal({
     slug: 'site-settings',
     depth: 0,
@@ -51,9 +82,12 @@ export async function sendContactConfirmation(payload: Payload, m: ContactMessag
   const owners = (settings.internal?.notificationEmails ?? []).map((e) => e.email).filter(Boolean)
   if (!owners.length && settings.email) owners.push(settings.email)
   const { mailbox, others } = splitRestaurantRecipients(owners)
-  const name = [m.firstName, m.lastName].filter(Boolean).join(' ')
+  const name = fullName(m)
   const table = `<table style="border-collapse:collapse">${row('Name', name)}${row('Email', m.email)}${row('Phone', m.phone)}${row('Message', m.message)}</table>`
 
+  let visitor: EmailStatus = 'failed'
+  // booking@ hears about it through the Bcc; otherwise through the notification below
+  let restaurant: EmailStatus = 'skipped'
   let sent = false
   try {
     await payload.sendEmail({
@@ -65,22 +99,31 @@ export async function sendContactConfirmation(payload: Payload, m: ContactMessag
       html: `<div style="font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.6;color:#222"><p>Hi ${escapeHtml(m.firstName)},</p><p>Thank you for your message. We’ve received it and will get back to you as soon as we can. You can reply to this email to add anything.</p>${table}<p>The La Veranda Team</p></div>`,
     })
     sent = true
+    visitor = 'sent'
+    if (mailbox) restaurant = 'sent'
   } catch (error) {
     console.error('Contact form: email to the visitor failed', error)
+    errors.push(`Copy to visitor: ${(error as Error).message}`)
   }
 
   // Other addresses, and the restaurant's mailbox if the visitor's email failed
   const notify = [...others, ...(mailbox && !sent ? [mailbox] : [])]
   if (notify.length) {
-    await payload
-      .sendEmail({
+    try {
+      await payload.sendEmail({
         to: notify.join(', '),
         replyTo: m.email,
         subject: `New message from ${name} (website contact form)`,
         html: `<div style="font-family:Arial,sans-serif;font-size:15px;color:#333"><p>New message from the La Veranda website. Reply to this email to answer ${escapeHtml(name)} directly.</p>${table}</div>`,
       })
-      .catch((error) => console.error('Contact form: email to the restaurant failed', error))
+      restaurant = 'sent'
+    } catch (error) {
+      console.error('Contact form: email to the restaurant failed', error)
+      restaurant = 'failed'
+      errors.push(`Restaurant notification: ${(error as Error).message}`)
+    }
   }
+  return { visitor, restaurant }
 }
 
 const when = (iso: string) =>

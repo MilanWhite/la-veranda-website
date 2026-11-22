@@ -21,6 +21,10 @@ async function load(req: PayloadRequest) {
 
 const message_ = (error: unknown) => (error as Error).message || 'Something went wrong.'
 
+// Requests whose emails are being resent right now (one server instance on Railway)
+const resending = new Set<string>()
+const RESEND_GAP_MS = 60_000
+
 export const eventRequestEndpoints: Endpoint[] = [
   {
     // Approve / decline / cancel
@@ -69,14 +73,32 @@ export const eventRequestEndpoints: Endpoint[] = [
     },
   },
   {
-    // Send the confirmation + notification emails again
+    // Send the confirmation + notification emails again. Refused while a resend for the same
+    // request is still going, or within a minute of the last emails, so a double click or two
+    // staff pressing it at once never sends the customer two copies.
     path: '/:id/resend-emails',
     method: 'post',
     handler: async (req) => {
       const { doc, error } = await load(req)
       if (error) return error
-      const result = await sendRequestEmails(req.payload, doc!)
-      return json({ ok: true, ...result })
+      const key = String(doc!.id)
+      if (resending.has(key)) {
+        return json({ error: 'These emails are already being sent. Reload in a moment.' }, 409)
+      }
+      const last = doc!.emails?.sentAt ? Date.parse(doc!.emails.sentAt) : 0
+      if (Date.now() - last < RESEND_GAP_MS) {
+        return json(
+          { error: 'These emails were sent less than a minute ago. Reload to see them.' },
+          429,
+        )
+      }
+      resending.add(key)
+      try {
+        const result = await sendRequestEmails(req.payload, doc!)
+        return json({ ok: true, ...result })
+      } finally {
+        resending.delete(key)
+      }
     },
   },
   {

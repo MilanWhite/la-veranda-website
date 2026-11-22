@@ -21,6 +21,17 @@ const when = (iso: string) =>
     timeZone: 'America/Toronto',
   }).format(new Date(iso))
 
+/** A plain sentence when an email sent for the message didn't go out, otherwise null. */
+function emailProblem(m: ContactMessage) {
+  const visitor = m.emails?.visitor === 'failed'
+  const restaurant = m.emails?.restaurant === 'failed'
+  if (visitor && restaurant)
+    return 'Neither the visitor’s copy nor the restaurant’s notification was sent.'
+  if (visitor) return 'The visitor didn’t get their copy of this message.'
+  if (restaurant) return 'The restaurant notification for this message wasn’t sent.'
+  return null
+}
+
 // Contact messages as an inbox: every message is readable right in the list, with Reply
 // and "Mark as handled" on it. No clicking into greyed-out form fields.
 export async function MessagesInbox({
@@ -76,6 +87,12 @@ export async function MessagesInbox({
                   <time dateTime={m.createdAt}>{when(m.createdAt)}</time>
                 </div>
                 <p className="lv-inbox-message">{m.message}</p>
+                {emailProblem(m) && (
+                  <p className="lv-inbox-warning" role="alert">
+                    {emailProblem(m)} Reply below, or email {m.firstName} directly.
+                    {m.emails?.error && <small>{m.emails.error}</small>}
+                  </p>
+                )}
                 {(m.replies ?? []).map((r) => (
                   <div key={r.id} className="lv-inbox-reply">
                     <span>
