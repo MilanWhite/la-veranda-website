@@ -15,6 +15,7 @@ import { asMedia, getEventMenu, getGallery, getMenu } from '../lib/content'
 import { EventRequestForm } from './EventRequestForm'
 
 export const metadata: Metadata = {
+  alternates: { canonical: '/events' },
   title: 'Events',
   description:
     'Weddings, showers, communions, corporate functions and birthdays at La Veranda, a historic event venue in Downtown Woodbridge with indoor and outdoor spaces. Request your event online.',

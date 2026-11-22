@@ -15,9 +15,21 @@ const sourceSans = Source_Sans_3({ subsets: ['latin'], variable: '--font-body' }
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSiteSettings()
   const siteTitle = settings.seo?.title || settings.restaurantName
+  // Link previews (iMessage, WhatsApp, Facebook…): Site Settings → Default SEO → Image if set,
+  // otherwise public/og-image.jpg. Best at 1200 × 630.
+  const seoImage = typeof settings.seo?.image === 'object' ? settings.seo.image?.url : null
   return {
+    // Full addresses for canonical links and share images (the live domain once launched)
+    metadataBase: new URL(process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'),
     title: { default: siteTitle, template: `%s | ${settings.restaurantName}` },
     description: settings.seo?.description,
+    openGraph: {
+      type: 'website',
+      siteName: settings.restaurantName,
+      locale: 'en_CA',
+      images: [{ url: seoImage || '/og-image.jpg', width: 1200, height: 630 }],
+    },
+    twitter: { card: 'summary_large_image' },
   }
 }
 

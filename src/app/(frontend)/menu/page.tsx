@@ -3,6 +3,7 @@ import type { Metadata } from 'next'
 import { MenuPage } from '../components/MenuPage'
 
 export const metadata: Metadata = {
+  alternates: { canonical: '/menu' },
   title: 'Dinner Menu',
   description:
     'Pasta made in-house, dry-aged steaks, pizzas, salads and antipasto at La Veranda in Woodbridge.',

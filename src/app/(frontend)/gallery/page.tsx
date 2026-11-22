@@ -8,6 +8,7 @@ import { PageBanner } from '../components/PageBanner'
 import { getGallery } from '../lib/content'
 
 export const metadata: Metadata = {
+  alternates: { canonical: '/gallery' },
   title: 'Gallery',
   description: 'Photos of the food, dining room and events at La Veranda in Woodbridge.',
 }
