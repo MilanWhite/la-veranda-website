@@ -5,6 +5,7 @@ import { FaBars, FaCaretDown, FaEnvelope, FaPhoneAlt } from 'react-icons/fa'
 import logo from '@/assets/logo.png'
 import { getSiteSettings } from '../getSiteSettings'
 import { NavAutoClose } from './NavAutoClose'
+import { NavGroupButton, NavLink } from './NavLinks'
 import { SocialLinks } from './SocialLinks'
 
 const nav = [
@@ -73,20 +74,20 @@ export async function Header() {
             {nav.map((item) =>
               item.children ? (
                 <li key={item.label} className="has-dropdown">
-                  <button type="button">
+                  <NavGroupButton hrefs={item.children.map((child) => child.href)}>
                     {item.label} <FaCaretDown />
-                  </button>
+                  </NavGroupButton>
                   <ul className="dropdown">
                     {item.children.map((child) => (
                       <li key={child.href}>
-                        <Link href={child.href}>{child.label}</Link>
+                        <NavLink href={child.href}>{child.label}</NavLink>
                       </li>
                     ))}
                   </ul>
                 </li>
               ) : (
                 <li key={item.href}>
-                  <Link href={item.href}>{item.label}</Link>
+                  <NavLink href={item.href}>{item.label}</NavLink>
                 </li>
               ),
             )}

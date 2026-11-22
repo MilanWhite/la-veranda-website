@@ -94,7 +94,7 @@ export const eventRequestEndpoints: Endpoint[] = [
       }
       resending.add(key)
       try {
-        const result = await sendRequestEmails(req.payload, doc!)
+        const result = await sendRequestEmails(req.payload, doc!, req.user?.email ?? 'System')
         return json({ ok: true, ...result })
       } finally {
         resending.delete(key)

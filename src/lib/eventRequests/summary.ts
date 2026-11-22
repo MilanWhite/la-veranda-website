@@ -72,7 +72,7 @@ export function summaryRows(r: EventRequest): SummaryRow[] {
     { label: 'Email', value: r.customer?.email ?? '' },
     { label: 'Phone', value: r.customer?.phone ?? '' },
     { label: 'Event Type', value: r.event?.type ?? '' },
-    { label: 'Event Date', value: r.event?.date ?? '' },
+    { label: 'Event Date', value: formatDate(r.event?.date) },
     { label: 'Start Time', value: formatTime(r.event?.startTime) },
     { label: 'Ending Time', value: formatTime(r.event?.endTime) },
     { label: '# of Guests Expected', value: String(r.event?.adults ?? '') },

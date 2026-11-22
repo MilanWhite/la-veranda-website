@@ -3,7 +3,7 @@ import { APIError, type CollectionAfterDeleteHook, type CollectionBeforeChangeHo
 
 import type { EventRequest } from '../../payload-types'
 import { removeCalendarEvent, upsertCalendarEvent } from '../googleCalendar'
-import { formatTime, STATUS_LABELS } from './summary'
+import { formatDate, formatTime, STATUS_LABELS } from './summary'
 
 type Doc = Partial<EventRequest> & Record<string, unknown>
 const FIRST_REQUEST_NUMBER = 4834 // continues from the old site's #4833
@@ -202,6 +202,7 @@ const LABELS: Record<string, string> = {
 const show = (path: string, value: unknown) => {
   if (value === null || value === undefined || value === '') return '(empty)'
   if (path.endsWith('Time')) return formatTime(String(value))
+  if (path === 'event.date') return formatDate(String(value))
   if (typeof value === 'boolean') return value ? 'yes' : 'no'
   return String(value)
 }
@@ -231,7 +232,9 @@ export const recordActivity: CollectionBeforeChangeHook = ({
   context,
 }) => {
   const now = new Date().toISOString()
-  const by = who(req)
+  // Emails and replies are saved by the server; the staff member who pressed the button is
+  // passed in context.by so History names them instead of "System".
+  const by = (context.by as string | undefined) || who(req)
 
   if (operation === 'create') {
     data.activity = [{ at: now, by: 'Website', message: 'Request sent from the website' }]
