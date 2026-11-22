@@ -16,6 +16,7 @@ import { getSiteSettings } from '../getSiteSettings'
 import { asMedia, getGallery } from '../lib/content'
 
 export const metadata: Metadata = {
+  alternates: { canonical: '/weddings-corporate' },
   title: 'Weddings & Corporate Events',
   description:
     'Wedding receptions, engagement parties, showers and corporate events at La Veranda, a historic event venue in Downtown Woodbridge with indoor and outdoor spaces and plated dinners from our kitchen.',

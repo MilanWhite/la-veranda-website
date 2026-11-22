@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import Image, { getImageProps } from 'next/image'
 import Link from 'next/link'
 
@@ -9,6 +10,8 @@ import { MenuSections } from './components/MenuSections'
 import { VisitUs } from './components/VisitUs'
 import { getSiteSettings } from './getSiteSettings'
 import { getMenu } from './lib/content'
+
+export const metadata: Metadata = { alternates: { canonical: '/' } }
 
 // Dinner-menu items marked "Show on homepage" in the admin, grouped like the old site.
 async function getFeaturedDishes() {

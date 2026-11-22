@@ -12,6 +12,7 @@ import { describeRepeat, TIME_ZONE } from '@/lib/recurrence'
 import { asMedia, getActiveSpecials } from '../lib/content'
 
 export const metadata: Metadata = {
+  alternates: { canonical: '/specials' },
   title: 'Specials',
   description: 'Holiday brunches, special menus and upcoming events at La Veranda in Woodbridge.',
 }

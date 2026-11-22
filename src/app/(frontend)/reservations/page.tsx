@@ -8,6 +8,7 @@ import { PageBanner } from '../components/PageBanner'
 import { getSiteSettings } from '../getSiteSettings'
 
 export const metadata: Metadata = {
+  alternates: { canonical: '/reservations' },
   title: 'Reservations',
   description: 'Reserve a table at La Veranda in Woodbridge by phone or email.',
 }

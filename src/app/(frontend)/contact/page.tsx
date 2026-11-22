@@ -11,6 +11,7 @@ import { getSiteSettings } from '../getSiteSettings'
 import { ContactForm } from './ContactForm'
 
 export const metadata: Metadata = {
+  alternates: { canonical: '/contact' },
   title: 'Contact',
   description:
     'Contact La Veranda at 140 Woodbridge Ave., Woodbridge, Ontario: send a message, call or email, see opening hours and get directions.',
