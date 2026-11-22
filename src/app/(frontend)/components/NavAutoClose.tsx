@@ -17,8 +17,17 @@ export function NavAutoClose() {
     const onClick = (e: MouseEvent) => {
       if ((e.target as Element | null)?.closest?.('.nav .dropdown a')) fromDropdown.current = true
     }
+    // Escape closes the phone menu
+    const onKey = (e: KeyboardEvent) => {
+      const toggle = document.getElementById('nav-toggle') as HTMLInputElement | null
+      if (e.key === 'Escape' && toggle?.checked) toggle.checked = false
+    }
     document.addEventListener('click', onClick, true)
-    return () => document.removeEventListener('click', onClick, true)
+    document.addEventListener('keydown', onKey)
+    return () => {
+      document.removeEventListener('click', onClick, true)
+      document.removeEventListener('keydown', onKey)
+    }
   }, [])
 
   useEffect(() => {

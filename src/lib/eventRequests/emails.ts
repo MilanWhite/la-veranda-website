@@ -98,7 +98,8 @@ export function ownerEmailHtml(r: EventRequest) {
 
 type Status = 'sent' | 'failed' | 'skipped'
 
-export async function sendRequestEmails(payload: Payload, request: EventRequest) {
+/** `by`: who it's recorded as in History ("Website" for a new request, or the staff member). */
+export async function sendRequestEmails(payload: Payload, request: EventRequest, by = 'Website') {
   const settings = await payload.findGlobal({
     slug: 'site-settings',
     depth: 0,
@@ -175,6 +176,7 @@ export async function sendRequestEmails(payload: Payload, request: EventRequest)
     overrideAccess: true,
     context: {
       skipCalendar: true,
+      by,
       activity: [
         `Confirmation email to customer ${label[customer]}`,
         `Notification email to restaurant ${label[owner]}`,
@@ -237,6 +239,7 @@ export async function sendCustomerReply(
     overrideAccess: true,
     context: {
       skipCalendar: true,
+      by: sentBy,
       activity: [
         `Reply emailed to customer${sentBy ? ` by ${sentBy}` : ''}${attachPdf ? ' (with PDF)' : ''}: “${(firstLine ?? message).trim().slice(0, 120)}${(firstLine ?? message).trim().length > 120 ? '…' : ''}”`,
       ],
