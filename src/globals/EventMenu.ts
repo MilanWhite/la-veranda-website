@@ -328,7 +328,8 @@ export const EventMenu: GlobalConfig = {
               admin: {
                 components: rowLabel,
                 initCollapsed: true,
-                description: 'Radio questions such as Wine Service and Alcohol.',
+                description:
+                  'Radio questions such as Wine Service and Alcohol. An answer with the same name as an extra (e.g. "Open Bar") is linked to it: choosing one selects the other, and the form starts on the other answer (e.g. "Pay per consumption").',
               },
               fields: [
                 {

@@ -1,4 +1,5 @@
 import type { EventMenu, EventRequest } from '../../payload-types'
+import { extraLinks } from './linkedExtras'
 import { pricingNotes } from './summary'
 
 // Validates an event request against the current event menu (never trusting the browser)
@@ -149,9 +150,21 @@ export function validateEventRequest(form: FormData, menu: EventMenu) {
     })
   }
 
+  // Extras and the radio answers they're linked to (e.g. "Open Bar" extra ↔ Alcohol → Open
+  // Bar): if either is chosen, both are saved, so the request never says two different things.
+  const extraIds = new Set(all('extra'))
+  const answers: Record<string, string> = {}
+  for (const choice of menu.choices ?? []) answers[choice.key] = text(`choice.${choice.key}`, 100)
+  for (const link of extraLinks(menu)) {
+    if (extraIds.has(link.extraId) || answers[link.choiceKey] === link.optionId) {
+      extraIds.add(link.extraId)
+      answers[link.choiceKey] = link.optionId
+    }
+  }
+
   // Extras
   const extrasAvailable = (menu.extras ?? []).filter((e) => e.available !== false)
-  const extras = [...new Set(all('extra'))]
+  const extras = [...extraIds]
     .map((id) => extrasAvailable.find((e) => e.id === id))
     .filter((e): e is NonNullable<typeof e> => Boolean(e))
     .map((e) => ({ name: e.name, price: e.price, unit: e.unit }))
@@ -159,7 +172,7 @@ export function validateEventRequest(form: FormData, menu: EventMenu) {
   // Additional details (radio questions)
   const details: RequestData['details'] = []
   for (const choice of menu.choices ?? []) {
-    const id = text(`choice.${choice.key}`, 100)
+    const id = answers[choice.key]
     const option = (choice.options ?? []).find((o) => o.id === id)
     if (!option) errors[`choice.${choice.key}`] = `Please choose an option for ${choice.label}.`
     else details.push({ label: choice.label, value: option.label })
