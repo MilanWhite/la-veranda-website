@@ -5,7 +5,9 @@
 export const REVEAL = {
   // Rise from below
   up: [
-    '.container > .eyebrow',
+    // Not the hero/banner eyebrow: it animates in with its heading on load (globals.css).
+    // Waiting for the script made it pop in late on phones.
+    '.container:not(.hero-content, .page-banner-content) > .eyebrow',
     '.section-title',
     '.container > .lead',
     '.container > p.center',
