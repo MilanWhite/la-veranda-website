@@ -2,6 +2,7 @@
 
 import { startTransition, useActionState, useEffect, useMemo, useRef, useState } from 'react'
 
+import { defaultChoices, extraLinks } from '@/lib/eventRequests/linkedExtras'
 import { pricingNotes } from '@/lib/eventRequests/summary'
 import type { EventMenu } from '@/payload-types'
 import { Turnstile, type TurnstileHandle } from '../components/Turnstile'
@@ -51,9 +52,35 @@ export function EventRequestForm({ menu, startTimes }: { menu: EventMenu; startT
   const [picked, setPicked] = useState<Record<string, string[]>>({})
   const [tbd, setTbd] = useState<Record<string, boolean>>({})
   const [extras, setExtras] = useState<string[]>([])
-  const [choices, setChoices] = useState<Record<string, string>>(() =>
-    Object.fromEntries((menu.choices ?? []).map((c) => [c.key, c.options?.[0]?.id ?? ''])),
-  )
+  const [choices, setChoices] = useState<Record<string, string>>(() => defaultChoices(menu))
+  // e.g. the "Open Bar" extra and Alcohol → "Open Bar" move together (lib/eventRequests/linkedExtras)
+  const links = useMemo(() => extraLinks(menu), [menu])
+
+  const toggleExtra = (id: string) => {
+    const on = !extras.includes(id)
+    setExtras((p) => (on ? [...p, id] : p.filter((x) => x !== id)))
+    for (const l of links.filter((l) => l.extraId === id)) {
+      setChoices((p) =>
+        on
+          ? { ...p, [l.choiceKey]: l.optionId }
+          : p[l.choiceKey] === l.optionId
+            ? { ...p, [l.choiceKey]: l.offOptionId }
+            : p,
+      )
+    }
+  }
+  const pickChoice = (key: string, optionId: string) => {
+    setChoices((p) => ({ ...p, [key]: optionId }))
+    for (const l of links.filter((l) => l.choiceKey === key)) {
+      setExtras((p) =>
+        l.optionId === optionId
+          ? p.includes(l.extraId)
+            ? p
+            : [...p, l.extraId]
+          : p.filter((x) => x !== l.extraId),
+      )
+    }
+  }
   const [deposit, setDeposit] = useState(false)
 
   // The ending time follows the start time (start + included hours) until the customer
@@ -394,11 +421,7 @@ export function EventRequestForm({ menu, startTimes }: { menu: EventMenu; startT
                       name="extra"
                       value={e.id!}
                       checked={extras.includes(e.id!)}
-                      onChange={() =>
-                        setExtras((p) =>
-                          p.includes(e.id!) ? p.filter((x) => x !== e.id) : [...p, e.id!],
-                        )
-                      }
+                      onChange={() => toggleExtra(e.id!)}
                     />
                     {e.name}{' '}
                     <span className="upcharge">
@@ -434,7 +457,7 @@ export function EventRequestForm({ menu, startTimes }: { menu: EventMenu; startT
                       name={`choice.${c.key}`}
                       value={o.id!}
                       checked={choices[c.key] === o.id}
-                      onChange={() => setChoices((p) => ({ ...p, [c.key]: o.id! }))}
+                      onChange={() => pickChoice(c.key, o.id!)}
                     />{' '}
                     {o.label}
                   </label>
