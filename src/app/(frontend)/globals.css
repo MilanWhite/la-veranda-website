@@ -1807,3 +1807,104 @@ label {
 .email-dialog-close:hover {
   color: var(--accent);
 }
+
+/* Animations, in the style of the old (Elementor) site.
+
+   On load: the homepage photo slowly zooms in and back out; the hero text and each page's
+   banner title rise into place; banner photos settle from a slight zoom.
+   On scroll: each part (headings, text, photos, cards, forms) plays a one-second fade-and-
+   slide once, as soon as it comes into view: from below, or from its own side for side-by-side
+   pairs (the homepage's Event Center from the left, From Our Kitchen from the right). Parts
+   that arrive together follow each other by a fraction of a second. What animates is listed
+   in lib/reveal.ts; components/ScrollReveal.tsx starts each one.
+   Everything is off for people who ask their device for reduced motion. */
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    translate: 0 40px;
+  }
+}
+
+@keyframes from-left {
+  from {
+    opacity: 0;
+    translate: -70px 0;
+  }
+}
+
+@keyframes from-right {
+  from {
+    opacity: 0;
+    translate: 70px 0;
+  }
+}
+
+@keyframes settle {
+  from {
+    scale: 1.12;
+  }
+}
+
+@keyframes slow-zoom {
+  to {
+    scale: 1.1;
+  }
+}
+
+@keyframes grow-line {
+  from {
+    scale: 0 1;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Photos zoom inside their frame; things sliding in from the side never widen the page */
+  .hero,
+  .page-banner {
+    overflow: hidden;
+  }
+
+  main {
+    overflow-x: clip;
+  }
+
+  .hero > img.cover {
+    animation: slow-zoom 8s ease-in-out infinite alternate;
+  }
+
+  .page-banner > img.cover {
+    animation: settle 1.8s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+
+  .hero-content > *,
+  .page-banner-content > * {
+    animation: rise 1s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .hero-content > :nth-child(2),
+  .page-banner-content > :nth-child(2) {
+    animation-delay: 0.15s;
+  }
+
+  .hero-content > :nth-child(3) {
+    animation-delay: 0.3s;
+  }
+
+  /* Entrance animations: hidden until in view (see lib/reveal.ts), then played once */
+  .is-in[data-reveal] {
+    animation: rise 1s cubic-bezier(0.22, 1, 0.36, 1) var(--reveal-delay, 0s) both;
+  }
+
+  .is-in[data-reveal='left'] {
+    animation-name: from-left;
+  }
+
+  .is-in[data-reveal='right'] {
+    animation-name: from-right;
+  }
+
+  .is-in[data-reveal='line'] {
+    animation-name: grow-line;
+  }
+}
