@@ -6,9 +6,28 @@ import { fileURLToPath } from 'url'
 const __filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(__filename)
 
+// Sent with every page and file. (No Content-Security-Policy: the admin, Google Maps and
+// Turnstile all need inline scripts or other sites, so a strict one would break them.)
+const securityHeaders = [
+  // Don't let browsers guess a file's type (an upload can't be run as a script)
+  { key: 'X-Content-Type-Options', value: 'nosniff' },
+  // Other sites can't show the site or the admin inside a frame (clickjacking)
+  { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
+  // Other sites only see "laverandaresto.com" as where a visitor came from, not the full URL
+  { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+  // Features the site never uses
+  { key: 'Permissions-Policy', value: 'camera=(), microphone=(), payment=(), usb=()' },
+  // HTTPS only, for a year. Not for subdomains: the old mail/webmail ones may not have HTTPS.
+  { key: 'Strict-Transport-Security', value: 'max-age=31536000' },
+]
+
 const nextConfig: NextConfig = {
+  poweredByHeader: false,
   // Rendered on the server only (booking summary PDF)
   serverExternalPackages: ['@react-pdf/renderer'],
+  async headers() {
+    return [{ source: '/:path*', headers: securityHeaders }]
+  },
   images: {
     localPatterns: [
       {

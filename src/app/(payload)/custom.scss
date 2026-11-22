@@ -973,6 +973,24 @@ body:has(.collection-edit--event-requests) .doc-header {
 }
 
 // Replies already sent, under a contact message
+.lv-inbox-warning {
+  margin: 0 0 14px;
+  padding: 8px 12px;
+  border-left: 3px solid var(--lv-bad);
+  border-radius: 0 6px 6px 0;
+  background: color-mix(in srgb, var(--lv-bad) 7%, transparent);
+  font-size: 14px;
+  line-height: 1.5;
+
+  small {
+    display: block;
+    margin-top: 2px;
+    color: var(--theme-elevation-500);
+    font-size: 12px;
+    overflow-wrap: anywhere;
+  }
+}
+
 .lv-inbox-reply {
   margin: 0 0 14px;
   padding: 10px 14px;

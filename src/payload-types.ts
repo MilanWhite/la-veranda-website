@@ -262,6 +262,11 @@ export interface ContactMessage {
   phone?: string | null;
   message: string;
   handled?: boolean | null;
+  emails?: {
+    visitor?: ('not_sent' | 'sent' | 'failed' | 'skipped') | null;
+    restaurant?: ('not_sent' | 'sent' | 'failed' | 'skipped') | null;
+    error?: string | null;
+  };
   replies?:
     | {
         message?: string | null;
@@ -672,6 +677,13 @@ export interface ContactMessagesSelect<T extends boolean = true> {
   phone?: T;
   message?: T;
   handled?: T;
+  emails?:
+    | T
+    | {
+        visitor?: T;
+        restaurant?: T;
+        error?: T;
+      };
   replies?:
     | T
     | {

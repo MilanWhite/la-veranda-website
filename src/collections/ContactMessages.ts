@@ -3,6 +3,13 @@ import type { CollectionConfig } from 'payload'
 import { authenticated } from '../access/authenticated'
 import { contactMessageEndpoints } from '../lib/contactReplies'
 
+const EMAIL_STATUS = [
+  { label: 'Not sent', value: 'not_sent' },
+  { label: 'Sent', value: 'sent' },
+  { label: 'Failed', value: 'failed' },
+  { label: 'Skipped (email not set up)', value: 'skipped' },
+]
+
 // Messages from the "Let's Talk" form on /contact. Created only by the form's server action
 // (never through the public API); only signed-in admins can read them.
 export const ContactMessages: CollectionConfig = {
@@ -48,7 +55,29 @@ export const ContactMessages: CollectionConfig = {
       admin: { position: 'sidebar' },
     },
     {
-      // Replies sent from the admin inbox (each one quotes the visitor's message)
+      // What happened to the emails sent when the message arrived (the visitor's copy and the
+      // restaurant's), so a failure shows in the inbox and on the dashboard, not just in logs.
+      name: 'emails',
+      type: 'group',
+      admin: { readOnly: true },
+      fields: [
+        {
+          type: 'row',
+          fields: [
+            { name: 'visitor', label: 'Copy to visitor', type: 'select', options: EMAIL_STATUS },
+            {
+              name: 'restaurant',
+              label: 'Restaurant notification',
+              type: 'select',
+              options: EMAIL_STATUS,
+            },
+          ],
+        },
+        { name: 'error', type: 'text' },
+      ],
+    },
+    {
+      // Replies sent from the admin inbox, in the visitor's email conversation
       name: 'replies',
       type: 'array',
       admin: { readOnly: true },

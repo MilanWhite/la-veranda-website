@@ -64,6 +64,24 @@ export async function Dashboard(props: AdminViewServerProps) {
     depth: 0,
   })
 
+  // Unanswered contact messages whose emails didn't go out
+  const failedMessages = await payload.find({
+    collection: 'contact-messages',
+    where: {
+      and: [
+        { handled: { not_equals: true } },
+        {
+          or: [
+            { 'emails.visitor': { equals: 'failed' } },
+            { 'emails.restaurant': { equals: 'failed' } },
+          ],
+        },
+      ],
+    },
+    limit: 0,
+    depth: 0,
+  })
+
   const collectionConfig = payload.collections['event-requests'].config
 
   return (
@@ -83,6 +101,17 @@ export async function Dashboard(props: AdminViewServerProps) {
               </span>
             ))}
             . Open the request to see why, then use “Resend emails” in its ⋯ menu.
+          </div>
+        )}
+        {failedMessages.totalDocs > 0 && (
+          <div className="lvd-alert" role="alert">
+            <strong>
+              {failedMessages.totalDocs === 1
+                ? 'An email for 1 contact message was not sent.'
+                : `Emails for ${failedMessages.totalDocs} contact messages were not sent.`}
+            </strong>{' '}
+            <Link href="/admin/collections/contact-messages">Open Contact Messages</Link> to see
+            which, and reply from there.
           </div>
         )}
         {/* Always opens pending-first (statusOrder) unless a sort was picked on this page,

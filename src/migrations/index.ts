@@ -10,6 +10,7 @@ import * as migration_20261115_195355_event_requests from './20261115_195355_eve
 import * as migration_20261118_022849_contact_message_replies from './20261118_022849_contact_message_replies';
 import * as migration_20261118_034916_event_reply_templates from './20261118_034916_event_reply_templates';
 import * as migration_20261121_192029_request_number_sequence from './20261121_192029_request_number_sequence';
+import * as migration_20261122_152035_contact_message_emails from './20261122_152035_contact_message_emails';
 
 export const migrations = [
   {
@@ -65,11 +66,16 @@ export const migrations = [
   {
     up: migration_20261118_034916_event_reply_templates.up,
     down: migration_20261118_034916_event_reply_templates.down,
-    name: '20261118_034916_event_reply_templates'
+    name: '20261118_034916_event_reply_templates',
   },
   {
     up: migration_20261121_192029_request_number_sequence.up,
     down: migration_20261121_192029_request_number_sequence.down,
     name: '20261121_192029_request_number_sequence',
+  },
+  {
+    up: migration_20261122_152035_contact_message_emails.up,
+    down: migration_20261122_152035_contact_message_emails.down,
+    name: '20261122_152035_contact_message_emails'
   },
 ];
