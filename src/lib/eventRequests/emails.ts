@@ -19,8 +19,31 @@ import { formatDate, formatTime, requestNotes, summaryRows } from './summary'
 
 // The customer's confirmation and every reply from the admin share this subject (replies add
 // "Re:"), so they show as one conversation for the customer and in the restaurant's Sent mail.
+// The name and event date make each request easy to spot in the inbox. The subject actually
+// sent is saved on the request, so replies keep it even if the name or date is edited later
+// (older requests, sent before this, keep their original subject without them).
+const shortDate = (date?: string | null) => {
+  if (!date || !/^\d{4}-\d{2}-\d{2}$/.test(date)) return date ?? ''
+  const [y, mo, d] = date.split('-').map(Number)
+  return new Intl.DateTimeFormat('en-CA', {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+    timeZone: 'UTC',
+  }).format(new Date(Date.UTC(y, mo - 1, d)))
+}
+
+const newConversationSubject = (r: EventRequest) => {
+  const about = [r.customer?.nameOrCompany?.trim(), shortDate(r.event?.date)].filter(Boolean)
+  return `Your event request #${r.requestNumber} at La Veranda${about.length ? ` (${about.join(', ')})` : ''}`
+}
+
 export const conversationSubject = (r: EventRequest) =>
-  `Your event request #${r.requestNumber} at La Veranda`
+  r.emails?.confirmationSubject ||
+  (r.emails?.confirmationMessageId
+    ? `Your event request #${r.requestNumber} at La Veranda`
+    : newConversationSubject(r))
 
 // A new email ID for each confirmation sent (a resend must not reuse one: Gmail drops
 // emails whose ID it has already seen). Replies point to it.
@@ -112,6 +135,7 @@ export async function sendRequestEmails(payload: Payload, request: EventRequest,
 
   let customer: Status = 'skipped'
   let messageId: string | null = null
+  let subject: string | null = null
   let owner: Status = 'skipped'
   const errors: string[] = []
 
@@ -133,11 +157,12 @@ export async function sendRequestEmails(payload: Payload, request: EventRequest,
     const { mailbox, others } = splitRestaurantRecipients(ownerEmails)
     try {
       messageId = newMessageId()
+      subject = conversationSubject(request)
       await payload.sendEmail({
         to: request.customer.email,
         ...(mailbox ? { bcc: mailbox } : {}),
         replyTo: replyToUnlessSender(settings.internal?.replyFromEmail || settings.email),
-        subject: conversationSubject(request),
+        subject,
         messageId,
         html: customerEmailHtml(request),
         attachments,
@@ -192,6 +217,8 @@ export async function sendRequestEmails(payload: Payload, request: EventRequest,
         // Keep the last delivered confirmation's ID so replies stay in its conversation
         confirmationMessageId:
           customer === 'sent' ? messageId : (request.emails?.confirmationMessageId ?? null),
+        confirmationSubject:
+          customer === 'sent' ? subject : (request.emails?.confirmationSubject ?? null),
       },
     },
   })

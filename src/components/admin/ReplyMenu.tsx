@@ -141,7 +141,7 @@ export function ReplyMenu() {
           <h2>Reply to {values.name}</h2>
           <p>
             To <strong>{f.email}</strong> · Subject “Re: Your event request #{values.number} at La
-            Veranda”
+            Veranda (…)”
           </p>
         </div>
         <textarea
