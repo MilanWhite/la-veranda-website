@@ -352,7 +352,7 @@ export const EventMenu: GlobalConfig = {
         {
           label: 'Reply Templates',
           description:
-            'Ready-made replies for the Reply button on a request. Placeholders are filled in from the request: {name} (contact person, or the name/company), {company}, {number}, {eventType}, {date}, {time}, {guests}. You can edit the message before sending; it goes out as a reply in the customer’s conversation (subject “Re: Your event request #… at La Veranda”).',
+            'Ready-made replies for the Reply button on a request. Placeholders are filled in from the request: {name} (contact person, or the name/company), {company}, {number}, {eventType}, {date}, {time}, {guests}. You can edit the message before sending; it goes out as a reply in the customer’s conversation (subject “Re: Your event request #… at La Veranda (name, date)”).',
           fields: [
             {
               name: 'replyTemplates',

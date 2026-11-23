@@ -12,6 +12,7 @@ import * as migration_20261118_034916_event_reply_templates from './20261118_034
 import * as migration_20261121_192029_request_number_sequence from './20261121_192029_request_number_sequence';
 import * as migration_20261122_152035_contact_message_emails from './20261122_152035_contact_message_emails';
 import * as migration_20261122_200000_singular_event_types from './20261122_200000_singular_event_types';
+import * as migration_20261122_230000_event_request_confirmation_subject from './20261122_230000_event_request_confirmation_subject';
 
 export const migrations = [
   {
@@ -83,5 +84,10 @@ export const migrations = [
     up: migration_20261122_200000_singular_event_types.up,
     down: migration_20261122_200000_singular_event_types.down,
     name: '20261122_200000_singular_event_types',
+  },
+  {
+    up: migration_20261122_230000_event_request_confirmation_subject.up,
+    down: migration_20261122_230000_event_request_confirmation_subject.down,
+    name: '20261122_230000_event_request_confirmation_subject',
   },
 ];

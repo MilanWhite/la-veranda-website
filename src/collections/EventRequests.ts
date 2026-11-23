@@ -428,6 +428,12 @@ export const EventRequests: CollectionConfig = {
                   label: 'Confirmation email ID',
                   type: 'text',
                 },
+                {
+                  // Replies reuse this subject (with "Re:") so they stay in the same conversation
+                  name: 'confirmationSubject',
+                  label: 'Confirmation email subject',
+                  type: 'text',
+                },
               ],
             },
             {
