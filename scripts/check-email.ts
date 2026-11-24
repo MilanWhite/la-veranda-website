@@ -20,11 +20,12 @@ if (!to || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(to)) {
 const mode = emailMode()
 if (!mode) {
   console.log(
-    'Email is not set up (no EMAIL_RELAY_URL/EMAIL_RELAY_SECRET, no SMTP_USER/SMTP_PASS).',
+    'Email is not set up (no CLOUDFLARE_ACCOUNT_ID/CLOUDFLARE_EMAIL_TOKEN, no EMAIL_RELAY_URL/EMAIL_RELAY_SECRET, no SMTP_USER/SMTP_PASS).',
   )
   process.exit(1)
 }
-console.log(`Sending with: ${mode === 'relay' ? 'email relay' : 'SMTP'}, from ${senderAddress()}`)
+const modeName = { cloudflare: 'Cloudflare Email Sending', relay: 'email relay', smtp: 'SMTP' }
+console.log(`Sending with: ${modeName[mode]}, from ${senderAddress()}`)
 
 const payload = await getPayload({ config })
 try {

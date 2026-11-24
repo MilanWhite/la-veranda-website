@@ -8,7 +8,10 @@ import {
   escapeHtml,
   isEmailConfigured,
   messageIdDomain,
+  missedRecipient,
   replyToUnlessSender,
+  sentMessageId,
+  sentThroughBackup,
   splitRestaurantRecipients,
 } from '../mail'
 import { renderBookingPdf, pdfFilename } from './pdf'
@@ -155,30 +158,39 @@ export async function sendRequestEmails(payload: Payload, request: EventRequest,
     // land in that same thread on both sides. Any other notification address gets the
     // separate notification below (Reply-To = customer).
     const { mailbox, others } = splitRestaurantRecipients(ownerEmails)
+    let mailboxReached = false
     try {
-      messageId = newMessageId()
+      const requested = newMessageId()
       subject = conversationSubject(request)
-      await payload.sendEmail({
+      const info = await payload.sendEmail({
         to: request.customer.email,
         ...(mailbox ? { bcc: mailbox } : {}),
         replyTo: replyToUnlessSender(settings.internal?.replyFromEmail || settings.email),
         subject,
-        messageId,
+        messageId: requested,
         html: customerEmailHtml(request),
         attachments,
       })
+      // Cloudflare replaces our ID with its own; replies must point to the one that went out
+      messageId = sentMessageId(info, requested)
       customer = 'sent'
-      if (mailbox) owner = 'sent'
+      // The Bcc copy can be left out (e.g. booking@ on Cloudflare's suppression list); then the
+      // restaurant gets the separate notification below instead
+      mailboxReached = Boolean(mailbox) && !missedRecipient(info, mailbox)
+      if (mailboxReached) owner = 'sent'
+      else if (mailbox) errors.push(`Copy to ${mailbox} (Bcc) was not delivered`)
+      const backup = sentThroughBackup(info)
+      if (backup) errors.push(`Customer email sent through the ${backup} (Cloudflare failed)`)
     } catch (error) {
       customer = 'failed'
       errors.push(`Customer email: ${(error as Error).message}`)
     }
 
-    // The restaurant must hear about the request even if the customer's email failed
-    const notify = [...others, ...(mailbox && customer === 'failed' ? [mailbox] : [])]
+    // The restaurant must hear about the request even if its Bcc copy didn't arrive
+    const notify = [...others, ...(mailbox && !mailboxReached ? [mailbox] : [])]
     if (notify.length) {
       try {
-        await payload.sendEmail({
+        const info = await payload.sendEmail({
           to: notify.join(', '),
           replyTo: request.customer.email,
           // Reads naturally to the customer as "Re: …" when staff reply
@@ -187,6 +199,8 @@ export async function sendRequestEmails(payload: Payload, request: EventRequest,
           attachments,
         })
         owner = 'sent'
+        const backup = sentThroughBackup(info)
+        if (backup) errors.push(`Restaurant email sent through the ${backup} (Cloudflare failed)`)
       } catch (error) {
         owner = 'failed'
         errors.push(`Restaurant email: ${(error as Error).message}`)

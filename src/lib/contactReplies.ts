@@ -6,7 +6,10 @@ import {
   escapeHtml,
   isEmailConfigured,
   messageIdDomain,
+  missedRecipient,
   replyToUnlessSender,
+  sentMessageId,
+  sentThroughBackup,
   splitRestaurantRecipients,
 } from './mail'
 
@@ -35,9 +38,17 @@ const json = (body: unknown, status = 200) => Response.json(body, { status })
 
 const newMessageId = () => `<contact-reply.${randomUUID()}@${messageIdDomain()}>`
 
-/** The first email's ID, derived from the message itself so replies can always point to it. */
-export const contactConfirmationId = (m: Pick<ContactMessage, 'id' | 'createdAt'>) =>
+/** The ID we ask for on the first email, derived from the message itself. */
+const requestedConfirmationId = (m: Pick<ContactMessage, 'id' | 'createdAt'>) =>
   `<contact-message.${m.id}.${Date.parse(m.createdAt)}@${messageIdDomain()}>`
+
+/**
+ * The first email's real ID, which replies point to. Saved when it's sent (Cloudflare picks its
+ * own ID); messages from before that was saved went out through Gmail, which kept ours.
+ */
+export const contactConfirmationId = (
+  m: Pick<ContactMessage, 'id' | 'createdAt' | 'confirmationMessageId'>,
+) => m.confirmationMessageId || requestedConfirmationId(m)
 
 const row = (label: string, value?: string | null) =>
   value
@@ -88,35 +99,58 @@ async function sendContactEmails(payload: Payload, m: ContactMessage, errors: st
   let visitor: EmailStatus = 'failed'
   // booking@ hears about it through the Bcc; otherwise through the notification below
   let restaurant: EmailStatus = 'skipped'
-  let sent = false
+  let mailboxReached = false
+  let confirmationMessageId: string | null = null
   try {
-    await payload.sendEmail({
+    const requested = requestedConfirmationId(m)
+    const info = await payload.sendEmail({
       to: m.email,
       ...(mailbox ? { bcc: mailbox } : {}),
       replyTo: replyToUnlessSender(settings.internal?.replyFromEmail || settings.email),
       subject: contactSubject(m),
-      messageId: contactConfirmationId(m),
+      messageId: requested,
       html: `<div style="font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.6;color:#222"><p>Hi ${escapeHtml(m.firstName)},</p><p>Thank you for your message. We’ve received it and will get back to you as soon as we can. You can reply to this email to add anything.</p>${table}<p>The La Veranda Team</p></div>`,
     })
-    sent = true
     visitor = 'sent'
-    if (mailbox) restaurant = 'sent'
+    confirmationMessageId = sentMessageId(info, requested)
+    // The Bcc copy can be left out (e.g. booking@ on Cloudflare's suppression list); then the
+    // restaurant gets the separate notification below instead
+    mailboxReached = Boolean(mailbox) && !missedRecipient(info, mailbox)
+    if (mailboxReached) restaurant = 'sent'
+    else if (mailbox) errors.push(`Copy to ${mailbox} (Bcc) was not delivered`)
+    const backup = sentThroughBackup(info)
+    if (backup) errors.push(`Copy to visitor sent through the ${backup} (Cloudflare failed)`)
   } catch (error) {
     console.error('Contact form: email to the visitor failed', error)
     errors.push(`Copy to visitor: ${(error as Error).message}`)
   }
 
-  // Other addresses, and the restaurant's mailbox if the visitor's email failed
-  const notify = [...others, ...(mailbox && !sent ? [mailbox] : [])]
+  // Save the ID the email went out with (Cloudflare picks its own) so replies thread onto it
+  if (confirmationMessageId) {
+    await payload
+      .update({
+        collection: 'contact-messages',
+        id: m.id,
+        overrideAccess: true,
+        data: { confirmationMessageId },
+      })
+      .catch((error) => console.error('Contact form: saving the email ID failed', error))
+  }
+
+  // Other addresses, and the restaurant's mailbox if its Bcc copy didn't arrive
+  const notify = [...others, ...(mailbox && !mailboxReached ? [mailbox] : [])]
   if (notify.length) {
     try {
-      await payload.sendEmail({
+      const info = await payload.sendEmail({
         to: notify.join(', '),
         replyTo: m.email,
         subject: `New message from ${name} (website contact form)`,
         html: `<div style="font-family:Arial,sans-serif;font-size:15px;color:#333"><p>New message from the La Veranda website. Reply to this email to answer ${escapeHtml(name)} directly.</p>${table}</div>`,
       })
       restaurant = 'sent'
+      const backup = sentThroughBackup(info)
+      if (backup)
+        errors.push(`Restaurant notification sent through the ${backup} (Cloudflare failed)`)
     } catch (error) {
       console.error('Contact form: email to the restaurant failed', error)
       restaurant = 'failed'
@@ -154,7 +188,7 @@ export async function sendContactReply(
     contactConfirmationId(m),
     ...(m.replies ?? []).map((r) => r.messageId).filter((id): id is string => !!id),
   ]
-  const messageId = newMessageId()
+  const requested = newMessageId()
 
   // No quote of the visitor's message: it's already the first email of this conversation
   // (their copy), so email apps show it just above the reply.
@@ -162,16 +196,18 @@ export async function sendContactReply(
     message,
   ).replace(/\n/g, '<br>')}</div>`
 
-  await payload.sendEmail({
+  const info = await payload.sendEmail({
     to: m.email,
     replyTo: replyToUnlessSender(settings.internal?.replyFromEmail || settings.email),
     subject: `Re: ${contactSubject(m)}`,
-    messageId,
+    messageId: requested,
     inReplyTo: earlier.at(-1),
     references: earlier,
     text: message,
     html,
   })
+  // The next reply points to this one, so save the ID it actually went out with
+  const messageId = sentMessageId(info, requested)
 
   await payload.update({
     collection: 'contact-messages',

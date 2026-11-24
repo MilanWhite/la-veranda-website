@@ -268,6 +268,7 @@ export interface ContactMessage {
     restaurant?: ('not_sent' | 'sent' | 'failed' | 'skipped') | null;
     error?: string | null;
   };
+  confirmationMessageId?: string | null;
   replies?:
     | {
         message?: string | null;
@@ -686,6 +687,7 @@ export interface ContactMessagesSelect<T extends boolean = true> {
         restaurant?: T;
         error?: T;
       };
+  confirmationMessageId?: T;
   replies?:
     | T
     | {

@@ -77,6 +77,14 @@ export const ContactMessages: CollectionConfig = {
       ],
     },
     {
+      // The ID the visitor's copy went out with; replies point to it so they form one
+      // conversation. Empty for messages from before it was saved (see contactConfirmationId).
+      name: 'confirmationMessageId',
+      label: 'Confirmation email ID',
+      type: 'text',
+      admin: { readOnly: true, hidden: true },
+    },
+    {
       // Replies sent from the admin inbox, in the visitor's email conversation
       name: 'replies',
       type: 'array',
